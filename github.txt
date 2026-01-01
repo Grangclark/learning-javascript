@@ -1,0 +1,32 @@
+cd C:\Users\Grangclark\OneDrive\ドキュメント\JavaScript
+
+https://github.com/Grangclark/learning-javascript.git
+
+Gitの初期化
+Gitを導入するディレクトリに移動して、下記のコマンドを入力することで対象ディレクトリに.gitディレクトリが生成され、Gitが使えるようになります。
+この.gitディレクトリに管理するリポジトリデータが格納されます。
+git init
+
+pushコマンド
+リモートリポジトリで自分の手元のローカルリポジトリの変更履歴を共有するには、ローカルリポジトリ内の変更履歴をアップロードする必要があります。
+そのために、Gitではプッシュ(Push)という操作を行います。 
+Pushを実行すると、リモートリポジトリ(GitHub)に自分の変更履歴がアップロードされて、
+リモートリポジトリ内の変更履歴がローカルリポジトリの変更履歴と同じ状態になります。
+リモートリポジトリにプッシュする前にリモートリポジトリに対してaddを実行しファイルをステージングしなければなりません。
+リモートリポジトリへのaddは下記のコマンドで実行します。
+git remote add origin https://github.com/'ユーザID'/'リポジトリ名'.git
+git remote add origin https://github.com/Grangclark/learning-javascript.git
+
+あとは
+git pull origin main
+git add .
+git commit -m ""
+git push origin main
+
+--- 
+
+git pull origin main
+git add
+git commit -m "The beginning of learning JavaScript"
+git push origin main
+
