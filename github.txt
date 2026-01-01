@@ -21,12 +21,12 @@ git remote add origin https://github.com/Grangclark/learning-javascript.git
 git pull origin main
 git add .
 git commit -m ""
-git push origin main
+git push -u origin main
 
 --- 
 
 git pull origin main
-git add
+git add .
 git commit -m "The beginning of learning JavaScript"
-git push origin main
+git push -u origin main
 
