@@ -2,13 +2,17 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>JS計算機</title>
+    <title>JS四則演算機</title>
 </head>
 <body>
-    <h1>足し算計算機</h1>
+    <h1>万能計算機</h1>
     <input type="number" id="num1" placeholder="数字1"> +
     <input type="number" id="num2" placeholder="数字2">
-    <button onclick="calculate()">計算する</button>
+    <br><br>
+    <button onclick="calculate('add')">+</button>
+    <button onclick="calculate('sub')">-</button>
+    <button onclick="calculate('mul')">×</button>
+    <button onclick="calculate('div')">÷</button>
 
     <h2 id="result">結果はここに表示されます</h2>
 
