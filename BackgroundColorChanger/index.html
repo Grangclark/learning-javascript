@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>背景色チェンジャー</title>
+    <style>
+        /* 少しだけ見た目を整えます */
+        body {
+            transition: background-color 0.5s; /* 色がふわっと変わる魔法 */
+            text-align: center;
+            padding-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <h1>今の気分は？</h1>
+    <button onclick="changeColor('lightblue')">爽やかな青</button>
+    <button onclick="changeColor('pink')">可愛いピンク</button>
+    <button onclick="changeColor('#ffeb3b')">元気な黄色</button>
+    <button onclick="changeColor('white')">リセット</button>
+
+    <script src="script.js"></script>
+</body>
+</html>
