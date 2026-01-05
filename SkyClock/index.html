@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Sky Clock</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* 画面の高さ一杯に表示 */
+            margin: 0;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            transition: background-color 2s; /* 背景変化をゆったりと */
+        }
+        #clock {
+            font-size: 80px;
+            font-weight: bold;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div id="clock">00:00:00</div>
+    <p id="message">読み込み中...</p>
+
+    <script src="script.js"></script>
+</body>
+</html>
