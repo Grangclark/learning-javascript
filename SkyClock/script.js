@@ -16,20 +16,25 @@ function updateClock() {
     let msg = "";
 
     if (hours >= 5 && hours < 11) {
-        color = "#ff9a9e"; // 朝：ピンク系
+        // 朝：明るいオレンジからピンクへ
+        color = "linear-gradient(120deg, #f6d365 0%, #fda085 100%)";
         msg = "おはようございます！";
     } else if (hours >= 11 && hours < 17) {
-        color = "#84fab0"; // 昼：グリーン系
+        // 昼：爽やかな青空
+        color = "linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%)";
         msg = "こんにちは！";
     } else if (hours >= 17 && hours < 20) {
-        color = "#fa709a"; // 夕方：オレンジ・夕焼け系
+        // 夕方：夕焼けの紫とオレンジ
+        color = "linear-gradient(120deg, #f093fb 0%, #f5576c 100%)";
         msg = "こんばんは！";
     } else {
-        color = "#30336b"; // 夜：深夜・ネイビー系
-        msg = "お疲れ様です、夜更かしはほどほどに。";
+        // 夜：深い夜空
+        color = "linear-gradient(120deg, #243949 0%, #517fa4 100%)";
+        msg = "お疲れ様です、ゆっくり休みましょう。";
     }
 
-    document.body.style.backgroundColor = color;
+    // backgroundColor ではなく background に代入します
+    document.body.style.background = color;
     document.getElementById('message').innerText = msg;
 }
 
