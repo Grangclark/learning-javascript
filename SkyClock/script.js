@@ -7,8 +7,12 @@ function updateClock() {
     const minutes = String(now.getMinutes()).padStart(2, '0');
     const seconds = String(now.getSeconds()).padStart(2, '0');
 
-    // 3. 画面に表示する文字列を作る
-    const timeString = `${hours}:${minutes}:${seconds}`;
+    // 3. 画面に表示する文字列を作る（機能追加：時計の「：」の部分を、1秒ごとに表示したり消したりする）
+    // ★ ここを書き換え！
+    // 秒が偶数の時は「:」、奇数の時は「 」（半角スペース）にする
+    const separator = now.getSeconds() % 2 === 0 ? ":" : " ";
+    const timeString = `${hours}${separator}${minutes}${separator}${seconds}`;
+
     document.getElementById('clock').innerText = timeString;
 
     // 4. 【応用】時間帯によって背景色を変える
