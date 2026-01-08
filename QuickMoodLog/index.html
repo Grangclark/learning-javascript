@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Quick Mood Log</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 20px;}
+        #log-list {list-style: none; padding: 0;}
+        li { background: #f0f0f0; margin: 5px; padding: 10px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>今の気分は？</h1>
+    <button onclick="addLog('😊 良い感じ')">😊 良い感じ</button>
+    <button onclick="addLog('😐 まあまあ')">😐 まあまあ</button>
+    <button onclick="addLog('😴 疲れ気味')">😴 疲れ気味</button>
+
+    <ul id="log-list">
+        </ul>
+    
+    <script src="script.js"></script>
+</body>
+</html>
