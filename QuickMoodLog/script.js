@@ -19,3 +19,14 @@ function addLog(mood, color) { // colorを引数に追加
     const list = document.getElementById('log-list');
     list.prepend(newLog); // prependを使うと「一番上」に追加されます
 }
+
+function clearLogs() {
+    // 1. 確認ダイアログを出す（うっかり削除防止）
+    const confirmDelete = confirm("すべてのログを削除してもよろしいですか？");
+
+    if (confirmDelete) {
+        // 2. 本棚（ul）を取得して、その中身（innerHTML）を空文字にする
+        const list = document.getElementById('log-list');
+        list.innerHTML = "";
+    }
+}
