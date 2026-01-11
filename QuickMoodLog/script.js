@@ -1,3 +1,10 @@
+function updateCount() {
+    const list = document.getElementById('log-list');
+    // ulの中にあるliタグの数を数える
+    const count = list.getElementsByTagName('li').length;
+    document.getElementById('log-count').innerText = count;
+}
+
 function addLog(mood, color) { // colorを引数に追加
     // 1. 現在の時刻を取得（時計アプリの知識が活きます！）
     const now = new Date();
@@ -18,6 +25,8 @@ function addLog(mood, color) { // colorを引数に追加
     // 4. HTMLにある「ulタグ」の中に、作ったliタグをガチャンと合体させる
     const list = document.getElementById('log-list');
     list.prepend(newLog); // prependを使うと「一番上」に追加されます
+
+    updateCount(); // ★追加：記録した後にカウント更新
 }
 
 function clearLogs() {
@@ -28,5 +37,7 @@ function clearLogs() {
         // 2. 本棚（ul）を取得して、その中身（innerHTML）を空文字にする
         const list = document.getElementById('log-list');
         list.innerHTML = "";
+
+        updateCount(); // ★追加：削除した後にカウント更新
     }
 }
