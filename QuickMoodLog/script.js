@@ -14,13 +14,35 @@ function addLog(mood, color) { // colorを引数に追加
     const newLog = document.createElement('li');
 
     // 3. 中身に「時間」と「気分」を書き込む
-    newLog.innerText = `${time} : ${mood}`;
+    // newLog.innerText = `${time} : ${mood}`;
 
     // ★ ここを追加！
     // リストの文字色（style.color）を指定された色に変える
     newLog.style.color = color;
     // ついでに、左側にその色の太い線を引くとオシャレになります
     newLog.style.borderLeft = `5px solid ${color}`;
+
+    // --- 2026/01/12 ---
+    // --- ここから書き換え ---
+    // 文字を表示するためのspan
+    const textSpan = document.createElement('span');
+    textSpan.innerText = `${time} : ${mood}`;
+
+    // 削除ボタンを作る
+    const deleteBtn = document.createElement('button');
+    deleteBtn.innerText = "x";
+    deleteBtn.style.marginLeft = "10px";
+
+    // ボタンが押されたら自分自身（li）を消す設定
+    deleteBtn.onclick = function() {
+        newLog.remove();
+        updateCount(); // 消した後にカウントも更新！
+    }
+
+    // liの中に、文字とボタンを入れる
+    newLog.appendChild(textSpan);
+    newLog.appendChild(deleteBtn);
+    // --- ここまで ---
 
     // 4. HTMLにある「ulタグ」の中に、作ったliタグをガチャンと合体させる
     const list = document.getElementById('log-list');
