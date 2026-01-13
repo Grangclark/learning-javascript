@@ -14,6 +14,18 @@
     <button onclick="addLog('😊 良い感じ', '#27ae60')">😊 良い感じ</button>
     <button onclick="addLog('😐 まあまあ', '#f39c12')">😐 まあまあ</button>
     <button onclick="addLog('😴 疲れ気味', '#2980b9')">😴 疲れ気味</button>
+    
+    <!-- 2026/01/13[火] 気分で絞り込み機能 -->
+    <hr>
+    <p>表示を絞り込む：
+        <select id="filter-mood" onchange="filterLogs()">
+            <option value="all">すべて表示</option>
+            <option value="😊 良い感じ">😊 良い感じ</option>
+            <option value="😐 まあまあ">😐 まあまあ</option>
+            <option value="😴 疲れ気味">😴 疲れ気味</option>
+        </select>
+    </p>
+    </hr>
 
     <p>現在の記録数： <span id="log-count">0</span>件</p>
 

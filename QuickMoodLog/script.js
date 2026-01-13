@@ -63,3 +63,20 @@ function clearLogs() {
         updateCount(); // ★追加：削除した後にカウント更新
     }
 }
+
+function filterLogs() {
+    const filterValue = document.getElementById('filter-mood').value;
+    const listItems = document.getElementById('log-list').getElementsByTagName('li');
+
+    // リストにある全ての li タグを、上から順番に1つずつチェックしていきます
+    for (let i = 0; i < listItems.length; i++) {
+        const item = listItems[i];
+        // リスト内のテキストに、選択した気分が含まれているかチェック
+        // 「すべて表示」か、その他のfilterValueに一致した場合、表示とする
+        if (filterValue === "all" || item.innerText.includes(filterValue)) {
+            item.style.display = ""; // 表示する
+        } else {
+            item.style.display = "none"; // 非表示にする
+        }
+    }
+}
