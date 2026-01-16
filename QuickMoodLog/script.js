@@ -1,8 +1,23 @@
 function updateCount() {
+    const listItems = document.getElementById('log-list').getElementsByTagName('li');
+    let visibleCount = 0; // 表示されているものを数えるための変数
+
+    for (let i = 0; i < listItems.length; i++) {
+        // もし、その行の display が "none" じゃなかったら（＝表示されていたら）
+        if (listItems[i].style.display !== "none") {
+            visibleCount++; // カウントを1増やす
+        }
+    }
+
+    // 数え終わった合計（visibleCount）を画面に表示する
+    document.getElementById('log-count').innerText = visibleCount;
+
+    /* 2026/01/16[金] コメントアウト
     const list = document.getElementById('log-list');
     // ulの中にあるliタグの数を数える
     const count = list.getElementsByTagName('li').length;
     document.getElementById('log-count').innerText = count;
+    */
 }
 
 function addLog(mood, color) { // colorを引数に追加
@@ -79,4 +94,8 @@ function filterLogs() {
             item.style.display = "none"; // 非表示にする
         }
     }
+
+    // ★これを追加！（2026年01月16日[金]）
+    // フィルター（表示・非表示）の切り替えが終わった直後に、数を数え直す
+    updateCount();
 }
