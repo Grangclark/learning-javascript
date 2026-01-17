@@ -99,3 +99,23 @@ function filterLogs() {
     // フィルター（表示・非表示）の切り替えが終わった直後に、数を数え直す
     updateCount();
 }
+
+function addDateStamp() {
+    const now = new Date();
+    // 「2026/1/17」のような形式で日付を取得
+    const dateString = now.toLocaleDateString();
+
+    const dateLog = document.createElement('li');
+
+    // 見やすくするために、少しデザインを太字＆背景グレーにします
+    dateLog.innerHTML = `<strong>📅 --- ${dateString} ---</strong>`;
+    dateLog.style.backgroundColor = "#ecf0f1";
+    dateLog.style.listStyle = "none";
+    dateLog.style.textAlign = "center";
+    
+    // フィルターに引っかからないように、あえて「気分」の文字は入れずに追加
+    const list = document.getElementById('log-list');
+    list.prepend(dateLog);
+
+    updateCount();
+}
