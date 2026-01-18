@@ -63,6 +63,13 @@ function addLog(mood, color) { // colorを引数に追加
     const list = document.getElementById('log-list');
     list.prepend(newLog); // prependを使うと「一番上」に追加されます
 
+    // ★ここを追加！（2026年01月18日[日]）
+    const cheer = document.getElementById('cheer-message');
+    cheer.innerText = "ナイス記録！今日も一歩前進ですね✨️";
+
+    // ３秒後にメッセージを消す（ずっと出ていると邪魔なので）
+    setTimeout(() => { cheer.innerText = ""; }, 3000);
+
     updateCount(); // ★追加：記録した後にカウント更新
 }
 
