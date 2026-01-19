@@ -65,7 +65,18 @@ function addLog(mood, color) { // colorを引数に追加
 
     // ★ここを追加！（2026年01月18日[日]）
     const cheer = document.getElementById('cheer-message');
-    cheer.innerText = "ナイス記録！今日も一歩前進ですね✨️";
+    const listItems = document.getElementById('log-list').getElementsByTagName('li');
+    const count = listItems.length;
+    // cheer.innerText = "ナイス記録！今日も一歩前進ですね✨️";
+
+    // ★ ここを書き換え！数に応じてメッセージを変える（2026年01月19日[月]）
+    if (count >= 10) {
+        cheer.innerText = "すごすぎる！１０回超えの快挙です！👑";
+    } else if (count >= 5) {
+        cheer.innerText = "その調子！５回も記録できましたね👍️";
+    } else {
+        cheer.innerText = "ナイス記録！今日も一歩前進です✨️";
+    }
 
     // ３秒後にメッセージを消す（ずっと出ていると邪魔なので）
     setTimeout(() => { cheer.innerText = ""; }, 3000);
