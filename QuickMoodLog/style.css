@@ -1,0 +1,15 @@
+/* リストの各行（li）の見た目を整える */
+#log-list li {
+    transition: all 0.3s ease;/* 変化をふわっとさせる魔法の1行 */
+    cursor: pointer;
+    margin-bottom: 5px;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+/* マウスを乗せた（hover）ときの変化 */
+#log-list li:hover {
+    background-color: #f0f0f0; /* 背景を少しグレーに */
+    transform: translateX(10px); /* 右に10pxスッと動く */
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1); /* 影をつけて浮いた感じに */
+}
