@@ -34,3 +34,27 @@ main, .container { /* index.htmlの構造に合わせて適宜調整してくだ
     transform: translateX(10px); /* 右に10pxスッと動く */
     box-shadow: 2px 2px 5px rgba(0,0,0,0.1); /* 影をつけて浮いた感じに */
 }
+
+/* 2026/01/22[木] */
+/* すべてのボタンに共通のデザイン */
+button {
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 25px; /* 角を丸くして可愛く */
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* 軽い影で浮いた感じに */
+}
+
+/* ボタンを押した（クリックした）瞬間の動き */
+button:active {
+    transform: translateY(2px); /* 2px沈む */
+    box-shadow: 0 2px 3px rgba(0,0,0,0.1); /* 影を薄くして「押した感」を出す */
+}
+
+/* ボタンにマウスを乗せたとき */
+button:hover {
+    filter: brightness(1.1); /* ほんの少し明るくする */
+}
