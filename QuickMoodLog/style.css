@@ -26,13 +26,22 @@ main, .container { /* index.htmlの構造に合わせて適宜調整してくだ
     margin-bottom: 5px;
     padding: 5px;
     border-radius: 5px;
+
+    /* 2026/01/24[土] */
+    border: 1px solid rgba(255, 255, 255, 0.3); /* 白い細い枠線 */
+    margin-bottom: 8px;
+    background: white; /* 背景は白のまま */
 }
 
 /* マウスを乗せた（hover）ときの変化 */
 #log-list li:hover {
     background-color: #f0f0f0; /* 背景を少しグレーに */
     transform: translateX(10px); /* 右に10pxスッと動く */
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.1); /* 影をつけて浮いた感じに */
+
+    /* 2026/01/24[土] */
+    box-shadow: 0 0 10px rgba(0,0,0,0.1),
+                0 0 20px currentColor; /* currentColorは文字の色（気分の色）を自動で使う魔法の言葉 */
+    transform: scale(1.02); /* ほんの少しだけ大きくする */
 }
 
 /* 2026/01/22[木] */
