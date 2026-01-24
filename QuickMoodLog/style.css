@@ -67,3 +67,29 @@ button:active {
 button:hover {
     filter: brightness(1.1); /* ほんの少し明るくする */
 }
+
+/* 日付区切り線のデザイン */
+.date-separator {
+    background-color: transparent !important; /* 背景を透明に */
+    border: none !important; /* 枠線を消す */
+    color: #7f8c8d; /* 落ちついたグレー */
+    font-size: 0.9em;
+    padding: 20px 0 10px 0 !important;
+    text-shadow: none !important; /* 光らせない */
+    cursor: default !important;
+    transform: none !important;
+}
+
+/* 日付スタンプには「昨日の光るエフェクト」を無効化する */
+.date-separator:hover {
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+/* 日付の下にちょっとした影のラインを入れる */
+.date-separator strong {
+    display: block;
+    border-bottom: 2px solid #bdc3c7;
+    padding-bottom: 5px;
+    letter-spacing: 2px;
+}

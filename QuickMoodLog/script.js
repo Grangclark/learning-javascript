@@ -123,7 +123,9 @@ function addDateStamp() {
     // 「2026/1/17」のような形式で日付を取得
     const dateString = now.toLocaleDateString();
 
+    // 2026/01/25[土]
     const dateLog = document.createElement('li');
+    dateLog.classList.add('date-separator'); // ★この１行を追加！
 
     // 見やすくするために、少しデザインを太字＆背景グレーにします
     dateLog.innerHTML = `<strong>📅 --- ${dateString} ---</strong>`;
