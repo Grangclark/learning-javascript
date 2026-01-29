@@ -25,3 +25,16 @@ function startTimer() {
         }
     }, 1000); // １０００ミリ秒（＝１秒）ごとに実行
 }
+
+// ストップ機能
+function stopTimer() {
+    clearInterval(timerId); // 動いているタイマーを止める
+    timerId = null; // 「止まっているよ」という印を付ける
+}
+
+// リセット機能
+function resetTimer() {
+    stopTimer(); // まずは止める
+    timeLeft = 25 * 60; // 時間を25分に戻す
+    updateDisplay(); // 表示を「25:00」に更新する
+}

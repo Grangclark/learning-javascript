@@ -23,7 +23,19 @@ body {
     color: #e74c3c; /* 集中力を高める赤系 */
 }
 
+/* Stopボタン：注意を促すオレンジ */
+#stop-btn {
+    background-color: #f39c12;
+}
+
+/* Resetボタン：落ち着いたグレー */
+#reset-btn {
+    background-color: #95a5a6;
+}
+
+/* ボタン同士の隙間を少し空ける */
 button {
+    margin: 5px;
     padding: 10px 30px;
     font-size: 1.2rem;
     cursor: pointer;
