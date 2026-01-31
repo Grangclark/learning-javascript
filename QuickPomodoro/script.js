@@ -14,6 +14,15 @@ function updateDisplay() {
     // 今のモードを表示する（HTMLにあとでid="mode-status"を追加します）
     const statusText = isWorkTime ? "💻 集中タイム" : "☕ 休憩タイム";
     document.getElementById('mode-status').innerText = statusText;
+
+    // ★ ここを追加：モードに合わせてBodyのクラスを入れ替える
+    if (isWorkTime) {
+        document.body.classList.add('work-mode');
+        document.body.classList.remove('break-mode');
+    } else {
+        document.body.classList.add('break-mode');
+        document.body.classList.remove('work-mode');
+    }
 }
 
 function startTimer() {

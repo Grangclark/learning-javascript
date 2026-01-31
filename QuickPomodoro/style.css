@@ -44,3 +44,24 @@ button {
     border: none;
     border-radius: 25px;
 }
+
+/* 集中モード（赤系グラデーション） */
+body.work-mode {
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+}
+body.work-mode #timer-display {
+    color: #e74c3c; /* タイマーの文字も情熱の赤 */
+}
+
+/* 休憩モード（青系グラデーション） */
+body.break-mode {
+    background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+}
+body.break-mode #timer-display {
+    color: #3498db; /* タイマーの文字は安らぎの青 */
+}
+
+/* 背景の変化をふわっとさせる（昨日の復習！） */
+body {
+    transition: background 0.5s ease;
+}
