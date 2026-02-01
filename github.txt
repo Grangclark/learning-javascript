@@ -39,4 +39,3 @@ git pull origin main
 git add .
 git commit -m "The beginning of learning JavaScript"
 git push -u origin main
-

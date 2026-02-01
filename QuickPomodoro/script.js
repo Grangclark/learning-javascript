@@ -37,16 +37,22 @@ function startTimer() {
             clearInterval(timerId); // 0になったら止める
             timerId = null;
 
+            // 集中が終わった時だけスタンプを追加
+            if (isWorkTime) {
+                addStamp();
+            }
+
             // ★ モードを入れ替える魔法
             isWorkTime = !isWorkTime;
 
             // 次の時間をセット（集中なら25分、休憩なら5分）
-            timeLeft = isWorkTime ? 25 * 60 : 5 * 60;
+            // timeLeft = isWorkTime ? 25 * 60 : 5 * 60;
+            timeLeft = isWorkTime ? 1 * 60 : 1 * 60;
 
             updateDisplay();
 
             setTimeout(() => {
-                alert(isWorkTime ? "休憩終了！仕事に戻りましょう！" : "集中終了！休憩しましょう！");
+                alert(isWorkTime ? "休憩終了！仕事に戻りましょう！" : "集中終了！お見事です！🍅！");
             }, 100);
         }
     }, 1000); // １０００ミリ秒（＝１秒）ごとに実行
@@ -64,4 +70,12 @@ function resetTimer() {
     timeLeft = 25 * 60; // 時間を25分に戻す
     updateDisplay(); // 表示を「25:00」に更新する
     isWorkTime = true; // リセットしたら集中モードに戻す
+}
+
+// スタンプを追加する関数
+function addStamp() {
+    const list = document.getElementById('stamps-list');
+    const stamp = document.createElement('span');
+    stamp.innerText = '🍅'; // トマトスタンプ！
+    list.appendChild(stamp);
 }

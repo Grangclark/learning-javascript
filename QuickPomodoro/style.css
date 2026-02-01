@@ -65,3 +65,15 @@ body.break-mode #timer-display {
 body {
     transition: background 0.5s ease;
 }
+
+#stamps-container {
+    margin-top: 30px;
+    border-top: 1px dashed #ccc;
+    padding-top: 10px;
+}
+
+#stamps-list {
+    font-size: 2rem;
+    letter-spacing: 5px;
+    min-height: 3rem; /* 最初から高さを確保しておくとレイアウトが崩れにくい */
+}
