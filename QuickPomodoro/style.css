@@ -77,3 +77,15 @@ body {
     letter-spacing: 5px;
     min-height: 3rem; /* 最初から高さを確保しておくとレイアウトが崩れにくい */
 }
+
+#clear-stamps-btn {
+    padding: 2px 10px;
+    font-size: 0.8rem;
+    background-color: #bdc3c7;/* 控えめなグレー */
+    margin-left: 10px;
+    border-radius: 5px;
+}
+
+#clear-stamps-btn:hover {
+    background-color: #95a5a6;
+}

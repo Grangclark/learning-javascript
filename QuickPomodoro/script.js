@@ -47,7 +47,7 @@ function startTimer() {
 
             // 次の時間をセット（集中なら25分、休憩なら5分）
             // timeLeft = isWorkTime ? 25 * 60 : 5 * 60;
-            timeLeft = isWorkTime ? 1 * 60 : 1 * 60;
+            timeLeft = isWorkTime ? 0.5 * 60 : 0.5 * 60;
 
             updateDisplay();
 
@@ -78,4 +78,14 @@ function addStamp() {
     const stamp = document.createElement('span');
     stamp.innerText = '🍅'; // トマトスタンプ！
     list.appendChild(stamp);
+}
+
+function clearStamps() {
+    // ユーザーに確認をとる（うっかり消し防止）
+    if (confirm("今日の成果（スタンプ）をリセットしますか？")) {
+        const list = document.getElementById('stamps-list');
+
+        // ★ 中身を空の文字列にするだけで、スタンプが全部消えます
+        list.innerHTML = "";
+    }
 }
