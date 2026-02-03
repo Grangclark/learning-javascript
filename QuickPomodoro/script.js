@@ -78,6 +78,9 @@ function addStamp() {
     const stamp = document.createElement('span');
     stamp.innerText = '🍅'; // トマトスタンプ！
     list.appendChild(stamp);
+
+    // ★ 画面上のトマトの数を数えて、数字を書き換える（この1行を足すだけ）
+    document.getElementById('stamp-count').innerText = list.children.length;
 }
 
 function clearStamps() {
@@ -87,5 +90,8 @@ function clearStamps() {
 
         // ★ 中身を空の文字列にするだけで、スタンプが全部消えます
         list.innerHTML = "";
+
+        // ★ 数字を「0」に戻す（この1行を足すだけ）
+        document.getElementById('stamp-count').innerText = "0"    
     }
 }
