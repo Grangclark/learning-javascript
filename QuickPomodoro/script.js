@@ -1,6 +1,7 @@
 let timeLeft = 0.1 * 60; // 25分を秒単位に変換（１５００秒）
 let timerId = null;
 let isWorkTime = true; // 今が集中時間ならtrue、休憩時間ならfalse
+const finishSound = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
 
 function updateDisplay() {
     const minutes = Math.floor(timeLeft / 60);
@@ -36,6 +37,9 @@ function startTimer() {
         if (timeLeft <= 0) {
             clearInterval(timerId); // 0になったら止める
             timerId = null;
+
+            // ★ ここで音を鳴らす！
+            finishSound.play();
 
             // 集中が終わった時だけスタンプを追加
             if (isWorkTime) {
