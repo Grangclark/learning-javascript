@@ -10,11 +10,18 @@ function updateDisplay() {
     // 秒が10未満の時、頭に「0」を付けて「09」のように表示する（パディング）
     const displaySeconds = seconds < 10 ? '0' + seconds : seconds;
 
-    document.getElementById('timer-display').innerText = `${minutes}:${displaySeconds}`;
+    // 現在の残り時間を文字列にする
+    const timeString = `${minutes}:${displaySeconds}`;
+
+    document.getElementById('timer-display').innerText = timeString;
 
     // 今のモードを表示する（HTMLにあとでid="mode-status"を追加します）
     const statusText = isWorkTime ? "💻 集中タイム" : "☕ 休憩タイム";
     document.getElementById('mode-status').innerText = statusText;
+
+    // ★【今日の本番】タブのタイトルを書き換える！
+    // 例：「(25:00) 💻 集中 | Quick Pomodoro」のような表示になります
+    document.title = `(${timeString}) ${statusText} | Quick Pomodoro`;
 
     // ★ ここを追加：モードに合わせてBodyのクラスを入れ替える
     if (isWorkTime) {
