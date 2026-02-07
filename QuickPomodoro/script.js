@@ -2,6 +2,8 @@ let timeLeft = 0.1 * 60; // 25分を秒単位に変換（１５００秒）
 let timerId = null;
 let isWorkTime = true; // 今が集中時間ならtrue、休憩時間ならfalse
 const finishSound = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
+// プログラムの最初の方（timeLeftなどの近く）に追加
+let totalWorkMinutes = 0;
 
 function updateDisplay() {
     const minutes = Math.floor(timeLeft / 60);
@@ -51,6 +53,9 @@ function startTimer() {
             // 集中が終わった時だけスタンプを追加
             if (isWorkTime) {
                 addStamp();
+                // ★ 集中時間を加算して表示を更新する
+                totalWorkMinutes += 25;
+                document.getElementById('total-minutes').innerText = totalWorkMinutes;
             }
 
             // ★ モードを入れ替える魔法
@@ -103,6 +108,10 @@ function clearStamps() {
         list.innerHTML = "";
 
         // ★ 数字を「0」に戻す（この1行を足すだけ）
-        document.getElementById('stamp-count').innerText = "0"    
+        document.getElementById('stamp-count').innerText = "0"
+
+        // ★ 合計時間も0に戻す
+        totalWorkMinutes = 0;
+        document.getElementById('total-minutes').innerText = "0";
     }
 }
