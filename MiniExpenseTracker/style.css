@@ -51,3 +51,18 @@ li {
     display: flex;
     justify-content: space-between;
 }
+
+#total-section {
+    background-color: #2c3e50;
+    color: white;
+    padding: 15px;
+    text-align: right;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+}
+
+#total-amount {
+    font-weight: bold;
+    font-size: 1.5rem;
+    margin-left: 5px;
+}
