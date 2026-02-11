@@ -5,7 +5,6 @@ function addExpense() {
     const nameInput = document.getElementById('item-name');
     const amountInput = document.getElementById('item-amount');
     const list = document.getElementById('expense-list');
-    
     const totalDisplay = document.getElementById('total-amount');
 
     if (nameInput.value === "" || amountInput.value === "") {
@@ -13,23 +12,31 @@ function addExpense() {
         return;
     }
 
-    // 1. 入力された金額を「数値」に変換する
     const amount = Number(amountInput.value);
 
-    // 2. 合計変数に加算する
-    totalAmount += amount;
-
-    // 3. 画面の合計表示を更新する（カンマ区切りにする）
-    totalDisplay.innerText = totalAmount.toLocaleString();
-
-    // --- ここからは昨日と同じ ---
+    // 1. リスト項目（li）を作る
     const li = document.createElement('li');
+
+    // 2. 中身を作る（削除ボタンも一緒に！）
     li.innerHTML = `
         <span>${nameInput.value}</span>
-        <span>${Number(amountInput.value).toLocaleString()}</span>
+        <span>${Number(amountInput.value).toLocaleString()}
+            <button class="delete-btn">x</button>
+        </span>
     `;
-    list.prepend(li);
 
+    // 3. 削除ボタンが押された時の処理
+    li.querySelector('.delete-btn').onclick = function() {
+        // 合計から引き算して表示を更新
+        totalAmount -= amount;
+        totalDisplay.innerText = totalAmount.toLocaleString();
+        // 画面からこの1行を消す
+        li.remove();
+    }
+
+    totalAmount += amount;
+    totalDisplay.innerText = totalAmount.toLocaleString();
+    list.prepend(li);
     nameInput.value = "";
     amountInput.value = "";
 }
