@@ -40,3 +40,15 @@ function addExpense() {
     nameInput.value = "";
     amountInput.value = "";
 }
+
+function clearAll() {
+    // 1. 念のための確認
+    if (confirm("すべての支出データを消去してもよろしいですか？")) {
+        // 2. 合計金額をゼロにする
+        totalAmount = 0;
+        document.getElementById('total-amount').innerText = "0";
+
+        // 3. リストの中身を空っぽにする
+        document.getElementById('expense-list').innerHTML = "";
+    }
+}

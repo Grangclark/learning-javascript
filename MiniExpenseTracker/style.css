@@ -81,3 +81,18 @@ li {
 .delete-btn:hover {
     background-color: #c0392b;
 }
+
+#clear-btn {
+    background-color: #95a5a6; /* 落ち着いたグレー */
+    color: white;
+    padding: 5px 10px;
+    margin-left: 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    vertical-align: middle;
+}
+
+#clear-btn:hover {
+    background-color: #7f8c8d;
+}
