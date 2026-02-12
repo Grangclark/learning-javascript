@@ -11,15 +11,31 @@ body {
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-    width: 400px;
+    /* width: 400px;  ←これを消すか、以下のように書き換える */
+    width: 90%; /* 画面の幅に合わせる */
+    max-width: 500px; /* 広がりすぎないように制限をかける */
 }
 
 h1 { color: #2c3e50; text-align: center; }
 
 .input-section {
     display: flex;
+    flex-wrap: wrap;  /* ★入り切らない時は自動で改行させる魔法 */
     gap: 10px;
     margin-bottom: 20px;
+}
+
+input, select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    flex: 1;          /* 隙間を埋めるように広がる */
+    min-width: 120px; /* せますぎるのを防ぐ */
+}
+
+#add-btn {
+    flex: none;       /* ボタンの幅は固定 */
+    width: 100%;      /* スマホで見やすいように、ボタンだけ下にドーンと出すのもアリ */
 }
 
 input {
@@ -95,4 +111,11 @@ li {
 
 #clear-btn:hover {
     background-color: #7f8c8d;
+}
+
+select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: white;
 }
