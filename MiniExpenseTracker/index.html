@@ -21,10 +21,16 @@
             <button id="add-btn" onclick="addExpense()">追加</button>
         </div>
 
-        <div class="total-section">
-            <strong>合計支出： </strong>
-            <span id="total-amount">0</span>円
+        <div id="total-section">
+            <strong>総合計： </strong><span id="total-amount">0</span>円
             <button id="clear-btn" onclick="clearAll()">Clear All</button>
+        </div>
+
+        <div id="category-summary">
+            <div>食費： <span id="cat-food">0</span>円</div>
+            <div>日用品： <span id="cat-daily">0</span>円</div>
+            <div>交際費： <span id="cat-social">0</span>円</div>
+            <div>その他： <span id="cat-other">0</span>円</div>
         </div>
 
         <ul id="expense-list">

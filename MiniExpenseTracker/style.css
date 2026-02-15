@@ -119,3 +119,25 @@ select {
     border-radius: 5px;
     background-color: white;
 }
+
+#category-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: #ecf0f1;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+}
+
+#category-summary div {
+    flex: 1;
+    min-width: 80px;
+    text-align: center;
+}
+
+#category-summary span {
+    font-weight: bold;
+    display: block; /* 金額を改行して表示 */
+}

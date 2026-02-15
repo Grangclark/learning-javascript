@@ -28,7 +28,7 @@ function addExpense() {
         category: categoryInput.value
     };
 
-    // 配列に追加して保存
+    // 配列に追加して保存（ここでexpensesの一番上に支出データを保存している）
     expenses.unshift(newExpense);
     saveAndRender();
 
@@ -54,11 +54,25 @@ function renderExpenses() {
     const list = document.getElementById('expense-list');
     const totalDisplay = document.getElementById('total-amount');
 
+    // カテゴリごとの表示場所を取得
+    const catFoodDisp = document.getElementById('cat-food');
+    const catDailyDisp = document.getElementById('cat-daily');
+    const catSocialDisp = document.getElementById('cat-social');
+    const catOtherDisp = document.getElementById('cat-other');
+
     list.innerHTML = "";
     totalAmount = 0;
 
+    // カテゴリ別の合計を保持する変数
+    let catTotals = { "食費": 0, "日用品": 0, "交際費": 0, "その他": 0 };
+
     expenses.forEach(expense => {
+        // 総計への加算
         totalAmount += expense.amount;
+
+        // カテゴリごとの加算
+        catTotals[expense.category] += expense.amount;
+
         const li = document.createElement('li');
         li.innerHTML = `
             <span><small>[${expense.category}]</small> ${expense.name}</span>
@@ -69,7 +83,12 @@ function renderExpenses() {
         list.appendChild(li);
     });
 
+    // 各表示を更新
     totalDisplay.innerText = totalAmount.toLocaleString();
+    catFoodDisp.innerText = catTotals["食費"].toLocaleString();
+    catDailyDisp.innerText = catTotals["日用品"].toLocaleString();
+    catSocialDisp.innerText = catTotals["交際費"].toLocaleString();
+    catOtherDisp.innerText = catTotals["その他"].toLocaleString();
 }
 
 // 削除機能も配列ベースに変更
