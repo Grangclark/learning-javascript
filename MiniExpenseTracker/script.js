@@ -74,6 +74,13 @@ function renderExpenses() {
         catTotals[expense.category] += expense.amount;
 
         const li = document.createElement('li');
+
+        // ★【ここがポイント】カテゴリ名をクラス名として追加する
+        // 例：expense.categoryが「食費」なら class="cat-食費" になるように
+        // わかりやすくするために、少し工夫してクラスを付けます
+        const categoryClass = getCategoryClass(expense.category);
+        li.classList.add(categoryClass);
+
         li.innerHTML = `
             <span><small>[${expense.category}]</small> ${expense.name}</span>
             <span>¥${expense.amount.toLocaleString()}
@@ -97,3 +104,12 @@ function deleteExpense(id) {
     saveAndRender();
 }
 
+// ★ クラス名を判定する便利な関数を一番下などに追加
+function getCategoryClass(category) {
+    switch (category) {
+        case '食費': return 'cat-food';
+        case '日用品': return 'cat-daily';
+        case '交際費': return 'cat-social';
+        default: return 'cat-other';
+    }
+}

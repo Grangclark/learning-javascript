@@ -1,3 +1,9 @@
+/* カテゴリごとの色のルール */
+.cat-food { border-left: 5px solid #ff9f43; }   /* オレンジ */
+.cat-daily { border-left: 5px solid #48dbfb ;}  /* 水色 */
+.cat-social { border-left: 5px solid #ff9ff3; } /* ピンク */
+.cat-other { border-left: 5px solid #54a0ff; }  /* 青 */
+
 body {
     background-color: #f4f7f6;
     font-family: sans-serif;
@@ -66,6 +72,9 @@ li {
     padding: 10px;
     display: flex;
     justify-content: space-between;
+    margin-bottom: 5px;
+    align-items: center;
+    border-radius: 0 5px 5px 0; /* 左側以外を丸くする */
 }
 
 #total-section {
