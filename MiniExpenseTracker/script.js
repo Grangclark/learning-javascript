@@ -113,3 +113,17 @@ function getCategoryClass(category) {
         default: return 'cat-other';
     }
 }
+
+// 金額の大きい順（降順）に並べ替える関数
+function sortByAmount() {
+    // 1. 配列「expenses」の中身を並べ替える
+    expenses.sort((a, b) => {
+        // b（後ろの要素）から a（前の要素）を引いて、
+        // プラスの結果ならbを前に持ってくる、というルールです
+        return b.amount - a.amount;
+    })
+
+    // 2. 並べ替えた結果を画面に再描画する
+    // 保存（localStorageへの書き込み）はせず、表示だけ変えるのがコツ！
+    renderExpenses();
+}
