@@ -50,7 +50,7 @@ function saveAndRender() {
 }
 
 // 配列の中身を元に、画面（HTML）を作る
-function renderExpenses() {
+function renderExpenses(data = expenses) {
     const list = document.getElementById('expense-list');
     const totalDisplay = document.getElementById('total-amount');
 
@@ -66,7 +66,7 @@ function renderExpenses() {
     // カテゴリ別の合計を保持する変数
     let catTotals = { "食費": 0, "日用品": 0, "交際費": 0, "その他": 0 };
 
-    expenses.forEach(expense => {
+    data.forEach(expense => {
         // 総計への加算
         totalAmount += expense.amount;
 
@@ -126,4 +126,30 @@ function sortByAmount() {
     // 2. 並べ替えた結果を画面に再描画する
     // 保存（localStorageへの書き込み）はせず、表示だけ変えるのがコツ！
     renderExpenses();
+}
+
+// フィルター用の関数
+function filterExpenses() {
+    const filterMonth = document.getElementById('filter-month').value; // "2024-02" みたいな形式で取得
+    if (!filterMonth) return;
+
+    // 1. 全データ(expenses)の中から、選んだ月と一致するものだけを抽出
+    const filteredList = expenses.filter(expense => {
+        // expense.id (Date.now()で作った数値) から日付を復元して「年-月」を作る
+        const date = new Date(expense.id);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // 月を2桁(02など)に
+        const yearMonth = `${year}-${month}`;
+
+        return yearMonth === filterMonth;
+    })
+
+    // 2. 抽出したリストだけで画面を描き直す
+    renderExpenses(filteredList);
+}
+
+// フィルターをリセットする関数
+function resetFilter() {
+    document.getElementById('filter-month').value = "";
+    renderExpenses(); // 引数なしで呼べば全データ表示（後述の修正が必要）
 }

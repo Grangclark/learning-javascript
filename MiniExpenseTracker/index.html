@@ -27,6 +27,11 @@
             <button id="clear-btn" onclick="clearAll()">Clear All</button>
         </div>
 
+        <div id="filter-section">
+            <input type="month" id="filter-month" onchange="filterExpenses()">
+            <button onclick="resetFilter()">全期間表示</button>
+        </div>
+
         <div id="category-summary">
             <div>食費： <span id="cat-food">0</span>円</div>
             <div>日用品： <span id="cat-daily">0</span>円</div>
