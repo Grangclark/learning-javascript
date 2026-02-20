@@ -9,16 +9,19 @@
     <div class="container">
         <h1>Mini Expense Tracker</h1>
 
-        <div class="input-section">
-            <input type="text" id="item-name" placeholder="項目名">
-            <select id="item-category">
+        <div id="input-section">
+            <input type="date" id="expense-date">
+
+            <input type="text" id="expense-name" placeholder="品目（例：ランチ）">
+            <input type="number" id="expense-amount" placeholder="金額">
+
+            <select id="expense-category">
                 <option value="食費">食費</option>
                 <option value="日用品">日用品</option>
                 <option value="交際費">交際費</option>
                 <option value="その他">その他</option>
             </select>
-            <input type="number" id="item-amount" placeholder="金額">
-            <button id="add-btn" onclick="addExpense()">追加</button>
+            <button onclick="addExpense()">追加</button>
         </div>
 
         <div id="total-section">

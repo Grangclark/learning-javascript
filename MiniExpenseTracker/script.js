@@ -4,34 +4,39 @@ let totalAmount = 0;
 // データを貯めておくための「配列」を用意
 let expenses = [];
 
-// 画面を読み込んだ時に、保存されたデータを呼び出す
+// ページ読み込み時に実行
 window.onload = function() {
-    const savedData = localStorage.getItem('myExpenses');
-    if (savedData) {
-        expenses = JSON.parse(savedData); // 文字列から配列に戻す
-        renderExpenses(); // 画面に表示する
-    }
+    // ★ 今日の日付を初期値としてセットする
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('expense-date').value = today;
 };
 
 function addExpense() {
-    const nameInput = document.getElementById('item-name');
-    const amountInput = document.getElementById('item-amount');
-    const categoryInput = document.getElementById('item-category'); // ★追加
+    const dateInput = document.getElementById('expense-date');
+    const nameInput = document.getElementById('expense-name');
+    const amountInput = document.getElementById('expense-amount');
+    const categoryInput = document.getElementById('expense-category');
 
-    if (nameInput.value === "" || amountInput.value === "") return;
+    // バリデーション（空チェック）に日付も追加
+    if (!dateInput.value || !nameInput.value || !amountInput.value) {
+        alert("日付、品目、金額をすべて入力してください");
+        return;
+    }
 
     // 新しい支出データを作成
-    const newExpense = {
-        id: Date.now(), // 削除する時に使うための固有ID
+    const expense = {
+        id: Date.now(), // 削除用のユニークなIDとしては引き続きこれを使います
+        date: dateInput.value, // ★ ユーザーが選んだ日付 ("2024-02-21" 形式)
         name: nameInput.value,
-        amount: Number(amountInput.value),
+        amount: parseInt(amountInput.value),
         category: categoryInput.value
     };
 
     // 配列に追加して保存（ここでexpensesの一番上に支出データを保存している）
-    expenses.unshift(newExpense);
+    expenses.unshift(expense);
     saveAndRender();
 
+    // 入力欄をクリア（日付は残しておいたほうが連続入力しやすいのでそのまま）
     nameInput.value = "";
     amountInput.value = "";
 }
@@ -82,7 +87,10 @@ function renderExpenses(data = expenses) {
         li.classList.add(categoryClass);
 
         li.innerHTML = `
-            <span><small>[${expense.category}]</small> ${expense.name}</span>
+            <span>
+                <small>[${expense.date}]</small> <small>[${expense.category}]</small>
+                ${expense.name}
+            </span>
             <span>¥${expense.amount.toLocaleString()}
                 <button class="delete-btn" onclick="deleteExpense(${expense.id})">x</button>
             </span>
@@ -135,13 +143,12 @@ function filterExpenses() {
 
     // 1. 全データ(expenses)の中から、選んだ月と一致するものだけを抽出
     const filteredList = expenses.filter(expense => {
-        // expense.id (Date.now()で作った数値) から日付を復元して「年-月」を作る
-        const date = new Date(expense.id);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0'); // 月を2桁(02など)に
-        const yearMonth = `${year}-${month}`;
+        // ★ ここを修正！IDではなく、保存した日付（expense.date）を使います
+        // expense.date は "2024-03-21" のような形式なので、
+        // 最初の7文字 ("2024-03") だけを切り取れば比較できます
+        const expenseYearMonth = expense.date.substring(0, 7);
 
-        return yearMonth === filterMonth;
+        return expenseYearMonth === filterMonth;
     })
 
     // 2. 抽出したリストだけで画面を描き直す
