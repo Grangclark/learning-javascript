@@ -4,6 +4,8 @@ let totalAmount = 0;
 // データを貯めておくための「配列」を用意
 let expenses = [];
 
+let myChart = null; // グラフを上書きするために必要
+
 // ページ読み込み時に実行
 window.onload = function() {
     // ★ 今日の日付を初期値としてセットする
@@ -104,6 +106,9 @@ function renderExpenses(data = expenses) {
     catDailyDisp.innerText = catTotals["日用品"].toLocaleString();
     catSocialDisp.innerText = catTotals["交際費"].toLocaleString();
     catOtherDisp.innerText = catTotals["その他"].toLocaleString();
+
+    // 合計金額を表示した後にこれを追記！
+    updateChart(catTotals);
 }
 
 // 削除機能も配列ベースに変更
@@ -159,4 +164,22 @@ function filterExpenses() {
 function resetFilter() {
     document.getElementById('filter-month').value = "";
     renderExpenses(); // 引数なしで呼べば全データ表示（後述の修正が必要）
+}
+
+function updateChart(catTotals) {
+    const ctx = document.getElementById('expense-chart').getContext('2d');
+
+    // すでにグラフがあれば一旦壊す（新しく描き直すため）
+    if (myChart) { myChart.destroy(); }
+
+    myChart = new Chart(ctx, {
+        type: 'pie', // 円グラフ
+        data: {
+            labels: Object.keys(catTotals), // カテゴリ名（食費、日用品など）
+            datasets: [{
+                data: Object.values(catTotals), // 合計金額の数字
+                backgroundColor: ['#ff9f43', '#48dbfb', '#ff9ff3', '#54a0ff'] // 以前決めた色
+            }]
+        }
+    });
 }
