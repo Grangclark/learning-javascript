@@ -169,15 +169,21 @@ function resetFilter() {
 function updateChart(catTotals) {
     const ctx = document.getElementById('expense-chart').getContext('2d');
 
+    // ★【今日の1行】金額が0より大きいカテゴリだけを抽出した新しいオブジェクトを作る
+    const activeTotals = Object.fromEntries(
+        Object.entries(catTotals).filter(([_, value]) => value > 0)
+    );
+
     // すでにグラフがあれば一旦壊す（新しく描き直すため）
     if (myChart) { myChart.destroy(); }
 
     myChart = new Chart(ctx, {
         type: 'pie', // 円グラフ
         data: {
-            labels: Object.keys(catTotals), // カテゴリ名（食費、日用品など）
+            // ★ catTotals ではなく activeTotals を使うように変更
+            labels: Object.keys(activeTotals), // カテゴリ名（食費、日用品など）
             datasets: [{
-                data: Object.values(catTotals), // 合計金額の数字
+                data: Object.values(activeTotals), // 合計金額の数字
                 backgroundColor: ['#ff9f43', '#48dbfb', '#ff9ff3', '#54a0ff'] // 以前決めた色
             }]
         }
