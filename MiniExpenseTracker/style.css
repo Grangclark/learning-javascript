@@ -24,11 +24,12 @@ body {
 
 h1 { color: #2c3e50; text-align: center; }
 
-.input-section {
-    display: flex;
-    flex-wrap: wrap;  /* ★入り切らない時は自動で改行させる魔法 */
-    gap: 10px;
-    margin-bottom: 20px;
+/* 入力エリアの各要素にスペースを空ける */
+#input-section input,
+#input-section select,
+#input-section button {
+    margin: 5px; /* 上下左右に5pxずつ余白を作る */
+    padding: 8px; /* 内側にも少し余裕を持たせると入力しやすくなります */
 }
 
 input, select {
@@ -149,4 +150,15 @@ select {
 #category-summary span {
     font-weight: bold;
     display: block; /* 金額を改行して表示 */
+}
+
+/* フィルターエリア全体の下にスペースを作る */
+#filter-section {
+    margin-bottom: 20px; /* フィルターエリアの下に20pxの空きを作る */
+}
+
+/* フィルター内の要素同士にも少しスペースを */
+#filter-section input,
+#filter-section button {
+    margin-right: 10px; /* 右側に10pxずつ空ける */
 }
