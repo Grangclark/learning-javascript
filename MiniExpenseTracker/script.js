@@ -2,15 +2,21 @@
 let totalAmount = 0;
 
 // データを貯めておくための「配列」を用意
-let expenses = [];
+// let expenses = [];
 
 let myChart = null; // グラフを上書きするために必要
+
+// 保存されたデータを取得し、無ければ空の配列にする
+let expenses = JSON.parse(localStorage.getItem('myExpenses')) || [];
 
 // ページ読み込み時に実行
 window.onload = function() {
     // ★ 今日の日付を初期値としてセットする
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('expense-date').value = today;
+
+    // 保存されたデータを画面に映す
+    renderExpenses();
 };
 
 function addExpense() {
@@ -113,7 +119,7 @@ function renderExpenses(data = expenses) {
 
 // 削除機能も配列ベースに変更
 function deleteExpense(id) {
-    expenses = expenses.filter(e => e.id !== id);
+    expenses = expenses.filter(expense => expense.id !== id);
     saveAndRender();
 }
 
