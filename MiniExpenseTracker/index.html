@@ -35,6 +35,17 @@
             <button onclick="resetFilter()">全期間表示</button>
         </div>
 
+        <div id="budget-section" style="margin-bottom: 20px;">
+            <label>今月の予算: </label>
+            <input type="number" id="monthly-budget" placeholder="例: 50,000" onchange="saveBudget()">
+            <span>円</span>
+
+            <div style="width: 100%; background: #eee; height: 20px; border-radius: 10px; margin-top: 10px; overflow: hidden;">
+                <div id="budget-bar" style="width: 0%; height: 100%; background: #4caf50; transition: 0.3s;"></div>
+            </div>
+            <p id="budget-status" style="font-size: 0.9em; margin-top: 5px;"></p>
+        </div>
+
         <div id="category-summary">
             <div>食費： <span id="cat-food">0</span>円</div>
             <div>日用品： <span id="cat-daily">0</span>円</div>

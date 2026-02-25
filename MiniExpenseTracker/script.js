@@ -106,6 +106,9 @@ function renderExpenses(data = expenses) {
         list.appendChild(li);
     });
 
+    // renderExpensesの中、合計(totalAmount)を出した後に追記
+    updateBudgetStatus(totalAmount);
+
     // 各表示を更新
     totalDisplay.innerText = totalAmount.toLocaleString();
     catFoodDisp.innerText = catTotals["食費"].toLocaleString();
@@ -194,4 +197,39 @@ function updateChart(catTotals) {
             }]
         }
     });
+}
+
+// 1. 予算を保存する関数
+function saveBudget() {
+    const budget = document.getElementById('monthly-budget').value;
+    localStorage.setItem('myBudget', budget);
+    renderExpenses(); // ゲージを更新するために再描画
+}
+
+// 2. ゲージを更新するロジック（renderExpensesの最後に追加）
+function updateBudgetStatus(totalAmount) {
+    const budget = localStorage.getItem('myBudget') || 0;
+    const budgetBar = document.getElementById('budget-bar');
+    const budgetStatus = document.getElementById('budget-status');
+    const budgetInput = document.getElementById('monthly-budget');
+
+    // 入力欄に値を戻しておく
+    budgetInput.value = budget;
+
+    if (budget > 0) {
+        const percent = Math.min((totalAmount / budget) * 100, 100);
+        budgetBar.style.width = percent + "%";
+
+        // 80%を超えたら注意（オレンジ）、100%を超えたら警告（赤）
+        if (percent >= 100) {
+            budgetBar.style.background = "#ff4757";
+            budgetStatus.innerText = `予算オーバー！（残り ¥${budget - totalAmount})`;
+        } else if (percent >= 80) {
+            budgetBar.style.background = "#ffa502";
+            budgetStatus.innerText = `あと少し！（残り ¥${budget - totalAmount})`;
+        } else {
+            budgetBar.style.background = "#2ed573";
+            budgetStatus.innerText = `順調です！（残り ¥${budget - totalAmount})`;
+        }
+    }
 }
