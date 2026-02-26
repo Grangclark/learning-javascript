@@ -9,11 +9,16 @@ let myChart = null; // グラフを上書きするために必要
 // 保存されたデータを取得し、無ければ空の配列にする
 let expenses = JSON.parse(localStorage.getItem('myExpenses')) || [];
 
+// 1. カテゴリの初期値（保存されていればそれを使い、無ければデフォルト）
+let categories = JSON.parse(localStorage.getItem('myCategories')) || ["食費", "日用品", "交際費", "その他"];
+
 // ページ読み込み時に実行
 window.onload = function() {
     // ★ 今日の日付を初期値としてセットする
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('expense-date').value = today;
+
+    updateCategoryUI();
 
     // 保存されたデータを画面に映す
     renderExpenses();
@@ -67,30 +72,28 @@ function renderExpenses(data = expenses) {
     const list = document.getElementById('expense-list');
     const totalDisplay = document.getElementById('total-amount');
 
-    // カテゴリごとの表示場所を取得
-    const catFoodDisp = document.getElementById('cat-food');
-    const catDailyDisp = document.getElementById('cat-daily');
-    const catSocialDisp = document.getElementById('cat-social');
-    const catOtherDisp = document.getElementById('cat-other');
+    // ★ 修正：カテゴリ別合計を表示するエリアを取得（HTML側にこのidのdivなどを用意）
+    const categorySummary = document.getElementById('category-summary');
+    categorySummary.innerHTML = "";
 
     list.innerHTML = "";
     totalAmount = 0;
 
-    // カテゴリ別の合計を保持する変数
-    let catTotals = { "食費": 0, "日用品": 0, "交際費": 0, "その他": 0 };
+    // ★ 手書きではなく、今のカテゴリリストから集計用ハコを自動作成
+    let catTotals = {};
+    categories.forEach(cat => catTotals[cat] = 0);
 
     data.forEach(expense => {
         // 総計への加算
         totalAmount += expense.amount;
 
-        // カテゴリごとの加算
-        catTotals[expense.category] += expense.amount;
+        // 集計（既存のロジックはそのままで動きます）
+        if (catTotals[expense.category] !== undefined) {
+            catTotals[expense.category] += expense.amount;
+        }
 
         const li = document.createElement('li');
-
-        // ★【ここがポイント】カテゴリ名をクラス名として追加する
-        // 例：expense.categoryが「食費」なら class="cat-食費" になるように
-        // わかりやすくするために、少し工夫してクラスを付けます
+        // カテゴリ用のクラス付与（以前作成した関数を利用）
         const categoryClass = getCategoryClass(expense.category);
         li.classList.add(categoryClass);
 
@@ -106,15 +109,19 @@ function renderExpenses(data = expenses) {
         list.appendChild(li);
     });
 
+    // ★ 修正：カテゴリごとの合計金額を画面に生成して表示
+    categories.forEach(cat => {
+        const span = document.createElement('span');
+        span.style.marginRight = "15px";
+        span.innerHTML = `${cat}: ¥<strong>${catTotals[cat].toLocaleString()}</strong>`;
+        categorySummary.appendChild(span);
+    })
+
     // renderExpensesの中、合計(totalAmount)を出した後に追記
     updateBudgetStatus(totalAmount);
 
-    // 各表示を更新
+    // 総計の表示
     totalDisplay.innerText = totalAmount.toLocaleString();
-    catFoodDisp.innerText = catTotals["食費"].toLocaleString();
-    catDailyDisp.innerText = catTotals["日用品"].toLocaleString();
-    catSocialDisp.innerText = catTotals["交際費"].toLocaleString();
-    catOtherDisp.innerText = catTotals["その他"].toLocaleString();
 
     // 合計金額を表示した後にこれを追記！
     updateChart(catTotals);
@@ -232,4 +239,28 @@ function updateBudgetStatus(totalAmount) {
             budgetStatus.innerText = `順調です！（残り ¥${budget - totalAmount})`;
         }
     }
+}
+
+// 2. カテゴリを追加する関数
+function addCategory() {
+    const input = document.getElementById('new-category-name');
+    const name = input.value.trim();
+
+    if (name && !categories.includes(name)) {
+        categories.push(name);
+        localStorage.setItem('myCategories', JSON.stringify(categories));
+        updateCategoryUI();
+        input.value = "";
+    }
+}
+
+// 3. セレクトボックスとグラフの色、集計用オブジェクトを動的に作る関数
+function updateCategoryUI() {
+    const select = document.getElementById('expense-category');
+
+    // セレクトボックスの中身を一度空にして作り直す
+    select.innerHTML = categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+
+    // 画面の表示も更新（グラフや集計に反映させるため）
+    renderExpenses();
 }
