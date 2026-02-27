@@ -264,3 +264,27 @@ function updateCategoryUI() {
     // 画面の表示も更新（グラフや集計に反映させるため）
     renderExpenses();
 }
+
+function exportToCSV() {
+    // 1. ヘッダー（1行目）を作成
+    let csvContent = "日付,項目,金額,カテゴリ\n";
+
+    // 2. データを1行ずつ追加
+    expenses.forEach(expense => {
+        const row = `${expense.date},${expense.name},${expense.amount},${expense.category}`;
+        csvContent += row + "\n";
+    });
+
+    // 3. 文字化け対策（Excelで開くための「BOM」というおまじない）
+    const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
+    const blob = new Blob([bom, csvContent], { type: "text/csv;charset=utf-8;" });
+
+    // 4. ダウンロード用のリンクを一時的に作ってクリックさせる
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "my_kakeibo_data.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
