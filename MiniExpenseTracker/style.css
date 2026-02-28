@@ -5,24 +5,37 @@
 .cat-other { border-left: 5px solid #54a0ff; }  /* 青 */
 
 body {
-    background-color: #f4f7f6;
-    font-family: sans-serif;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    margin: 0;
+    padding: 20px;
     display: flex;
     justify-content: center;
-    padding-top: 50px;
 }
 
-.container {
+#container {
+    max-width: 600px;
+    width: 100%;
     background: white;
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-    /* width: 400px;  ←これを消すか、以下のように書き換える */
-    width: 90%; /* 画面の幅に合わせる */
-    max-width: 500px; /* 広がりすぎないように制限をかける */
 }
 
-h1 { color: #2c3e50; text-align: center; }
+h1 { 
+    text-align: center; 
+    color: #2c3e50; 
+    margin-bottom: 30px;
+}
+
+#input-section, #filter-section, #budget-section, #category-manager {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #e9ecef;
+}
 
 /* 入力エリアの各要素にスペースを空ける */
 #input-section input,
@@ -32,12 +45,12 @@ h1 { color: #2c3e50; text-align: center; }
     padding: 8px; /* 内側にも少し余裕を持たせると入力しやすくなります */
 }
 
-input, select {
-    padding: 10px;
+input, select, button {
+    border-radius: 6px;
     border: 1px solid #ddd;
-    border-radius: 5px;
-    flex: 1;          /* 隙間を埋めるように広がる */
-    min-width: 120px; /* せますぎるのを防ぐ */
+    padding: 10px;
+    font-size: 14px;
+    transition: all 0.3s;
 }
 
 #add-btn {
@@ -52,18 +65,26 @@ input {
     flex: 1;
 }
 
+input:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52,152,219,0.3);
+}
+
 #item-amount { width: 80px; flex: none; }
 
 button {
     background-color: #3498db;
     color: white;
     border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
     cursor: pointer;
+    font-weight: bold;
 }
 
-button:hover { background-color: #2980b9; }
+button:hover { 
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
 
 ul { list-style: none; padding: 0; }
 
@@ -161,4 +182,30 @@ select {
 #filter-section input,
 #filter-section button {
     margin-right: 10px; /* 右側に10pxずつ空ける */
+}
+
+/* リスト表示の改善 */
+#expense-list {
+    list-style: none;
+    padding: 0;
+}
+
+#expense-list li {
+    background: white;
+    border-bottom: 1px solid #eee;
+    padding: 15px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#expense-list li:hover {
+    background-color: #fffaf0;
+}
+
+/* グラフのコンテナ */
+#chart-container {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 2px solid #eee;
 }
