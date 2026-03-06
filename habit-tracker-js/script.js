@@ -7,5 +7,10 @@ const checkBtn = document.getElementById('check-btn');
 
 // 3. ボタンがクリックされたら実行する処理
 checkBtn.addEventListener('click', () => {
-    console.log("今日もお疲れ様！習慣チェック完了！");
+    // 1. ボタンの文字を変える
+    checkBtn.innerText = "完了しました";
+    // 2. ボタンの色をグレー（お休み色）に変える
+    checkBtn.style.backgroundColor = "#ccc";
+    // 3. ボタンを無効化して、2回押せないようにする
+    checkBtn.disabled = true;
 });
