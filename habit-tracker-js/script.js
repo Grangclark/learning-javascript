@@ -13,4 +13,9 @@ checkBtn.addEventListener('click', () => {
     checkBtn.style.backgroundColor = "#ccc";
     // 3. ボタンを無効化して、2回押せないようにする
     checkBtn.disabled = true;
+
+    // ★ 今日の新しい3行：時間を記録する
+    const now = new Date().toLocaleString();
+    localStorage.setItem('lastHabitDate', now);
+    console.log("保存完了！：", now);
 });
