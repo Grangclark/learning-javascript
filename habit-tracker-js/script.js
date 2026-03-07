@@ -18,4 +18,13 @@ checkBtn.addEventListener('click', () => {
     const now = new Date().toLocaleString();
     localStorage.setItem('lastHabitDate', now);
     console.log("保存完了！：", now);
+
+    // 1. 保存された日付を読み出す
+    const savedDate = localStorage.getItem('lastHabitDate');
+
+    // 2. もしデータがあれば、ボタンを完了状態にする
+    if (savedDate) {
+        checkBtn.innerText = "完了済み：" + savedDate;
+        checkBtn.disabled = true;
+    }
 });
