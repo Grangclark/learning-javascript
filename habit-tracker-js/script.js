@@ -23,8 +23,8 @@ checkBtn.addEventListener('click', () => {
     const savedDate = localStorage.getItem('lastHabitDate');
 
     // 2. もしデータがあれば、ボタンを完了状態にする
-    if (savedDate) {
-        checkBtn.innerText = "完了済み：" + savedDate;
+    if (savedDate === new Date().toLocaleDateString()) {
+        checkBtn.innerText = "完了済み！";
         checkBtn.disabled = true;
     }
 });
