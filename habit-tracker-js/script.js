@@ -27,4 +27,9 @@ checkBtn.addEventListener('click', () => {
         checkBtn.innerText = "完了済み！";
         checkBtn.disabled = true;
     }
+
+    // ★ 今日の新しい3行：達成回数をカウントする
+    let count = parseInt(localStorage.getItem('habitCount')) || 0;
+    count++;
+    localStorage.setItem('habitCount', count);
 });
