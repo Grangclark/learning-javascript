@@ -32,4 +32,9 @@ checkBtn.addEventListener('click', () => {
     let count = parseInt(localStorage.getItem('habitCount')) || 0;
     count++;
     localStorage.setItem('habitCount', count);
+
+    // 保存された回数を読み出して、画面に表示する
+    const savedCount = localStorage.getItem('habitCount') || 0;
+    const statusMsg = `合計達成回数：${savedCount}回`;
+    document.body.insertAdjacentHTML('beforeend', `<p>${statusMsg}</p>`);
 });
