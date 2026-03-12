@@ -37,4 +37,10 @@ checkBtn.addEventListener('click', () => {
     const savedCount = localStorage.getItem('habitCount') || 0;
     const statusMsg = `合計達成回数：${savedCount}回`;
     document.body.insertAdjacentHTML('beforeend', `<p>${statusMsg}</p>`);
+
+    // ★ 今日の新しい3行：画面上の「◯回」という表示を書き換える
+    const countDisplay = document.querySelector('p');
+    if (countDisplay) {
+        countDisplay.innerText = `合計達成回数：${count}回`;
+    }
 });
