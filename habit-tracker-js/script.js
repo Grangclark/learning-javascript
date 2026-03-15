@@ -38,6 +38,12 @@ checkBtn.addEventListener('click', () => {
     const statusMsg = `合計達成回数：${savedCount}回`;
     document.body.insertAdjacentHTML('beforeend', `<p>${statusMsg}</p>`);
 
+    // ★ 今日の4行：昨日の日付を計算して、連続達成か確認する
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toLocaleDateString();
+    const lastDate = localStorage.getItem('lastHabitDate');
+
     // ★ 今日の新しい3行：クリックした瞬間に、画面上の数字を最新にする
     const countDisplay = document.querySelector('p');
     if (countDisplay) countDisplay.innerText = `合計達成回数：${count}回`;
