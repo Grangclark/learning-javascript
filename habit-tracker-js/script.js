@@ -44,6 +44,15 @@ checkBtn.addEventListener('click', () => {
     const yesterdayStr = yesterday.toLocaleDateString();
     const lastDate = localStorage.getItem('lastHabitDate');
 
+    // ★ 今日の新しい4行：昨日の日付と一致するかでストリークを更新する
+    let streak = parseInt(localStorage.getItem('habitStreak')) || 0;
+    if (lastDate === yesterdayStr) {
+        streak++;
+    } else {
+        streak = 1;
+    }
+    localStorate.setItem('habitStreak', streak);
+
     // ★ 今日の新しい3行：クリックした瞬間に、画面上の数字を最新にする
     const countDisplay = document.querySelector('p');
     if (countDisplay) countDisplay.innerText = `合計達成回数：${count}回`;
