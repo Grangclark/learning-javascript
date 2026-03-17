@@ -53,11 +53,14 @@ checkBtn.addEventListener('click', () => {
     }
     localStorage.setItem('habitStreak', streak);
 
-    // ★ 今日の新しい4行：ストリークを画面に表示する
-    const streakDisplay = document.createElement('p');
+    // ★ 今日の新しい4行：既存の表示を探して、スマートに更新する
+    let streakDisplay = document.querySelector('.streak-msg');
+    if (!streakDisplay) {
+        streakDisplay = document.createElement('p');
+        streakDisplay.className = 'streak-msg';
+        document.body.appendChild(streakDisplay);
+    }
     streakDisplay.innerText = `現在 ${streak} 日連続達成中！ 🔥`;
-    streakDisplay.style.color = "orange";
-    document.body.appendChild(streakDisplay);
 
     // ★ 今日の新しい3行：クリックした瞬間に、画面上の数字を最新にする
     const countDisplay = document.querySelector('p');
