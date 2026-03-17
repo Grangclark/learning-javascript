@@ -36,7 +36,7 @@ checkBtn.addEventListener('click', () => {
     // 保存された回数を読み出して、画面に表示する
     const savedCount = localStorage.getItem('habitCount') || 0;
     const statusMsg = `合計達成回数：${savedCount}回`;
-    document.body.insertAdjacentHTML('beforeend', `<p>${statusMsg}</p>`);
+    // document.body.insertAdjacentHTML('beforeend', `<p>${statusMsg}</p>`);
 
     // ★ 今日の4行：昨日の日付を計算して、連続達成か確認する
     const yesterday = new Date();
@@ -51,7 +51,13 @@ checkBtn.addEventListener('click', () => {
     } else {
         streak = 1;
     }
-    localStorate.setItem('habitStreak', streak);
+    localStorage.setItem('habitStreak', streak);
+
+    // ★ 今日の新しい4行：ストリークを画面に表示する
+    const streakDisplay = document.createElement('p');
+    streakDisplay.innerText = `現在 ${streak} 日連続達成中！ 🔥`;
+    streakDisplay.style.color = "orange";
+    document.body.appendChild(streakDisplay);
 
     // ★ 今日の新しい3行：クリックした瞬間に、画面上の数字を最新にする
     const countDisplay = document.querySelector('p');
