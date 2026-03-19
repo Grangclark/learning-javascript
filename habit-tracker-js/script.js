@@ -73,3 +73,10 @@ const initialCount = localStorage.getItem('habitCount') || 0;
 // 2. 画面上のpタグを捕まえて、回数を書き込む
 const countDisplay = document.querySelector('p');
 if (countDisplay) countDisplay.innerText = `合計達成回数：${initialCount}回`;
+
+// ★ 今日の新しい4行：ページを開いた瞬間にストリークを表示する
+const currentStreak = localStorage.getItem('habitStreak') || 0;
+const streakDisplay = document.createElement('p');
+streakDisplay.className = 'streak-msg';
+streakDisplay.innerText = `現在 ${currentStreak} 日連続達成中！ 🔥`;
+document.body.appendChild(streakDisplay);
