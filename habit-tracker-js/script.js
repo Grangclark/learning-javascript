@@ -62,6 +62,12 @@ checkBtn.addEventListener('click', () => {
     }
     streakDisplay.innerText = `現在 ${streak} 日連続達成中！ 🔥`;
 
+    // ★ 今日の新しい4行：特定の回数で「おめでとう」を出す準備
+    const messageArea = document.createElement('div');
+    messageArea.className = 'congrats-msg';
+    if (streak >= 7) messageArea.innerText = '1週間継続中！すごい！👏';
+    document.body.appendChild(messageArea);
+
     // ★ 今日の新しい3行：クリックした瞬間に、画面上の数字を最新にする
     const countDisplay = document.querySelector('p');
     if (countDisplay) countDisplay.innerText = `合計達成回数：${count}回`;
