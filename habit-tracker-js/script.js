@@ -71,7 +71,13 @@ checkBtn.addEventListener('click', () => {
     // ★ 今日の新しい4行：特定の回数で「おめでとう」を出す準備
     const messageArea = document.createElement('div');
     messageArea.className = 'congrats-msg';
-    if (streak >= 7) messageArea.innerText = '1週間継続中！すごい！👏';
+
+    // ★ 今日の新しい4行：10日、30日など節目のメッセージを追加する
+    if (streak >= 30) messageArea.innerText = '1ヶ月達成！神の領域です！👑';
+    else if (streak >= 10) messageArea.innerText = '10日突破！習慣のプロですね！✨';
+    else if (streak >= 7) messageArea.innerText = '1週間継続中！すごい！👏';
+    else messageArea.innerText = `現在 ${streak} 日目！明日も頑張ろう！`;
+    
     document.body.appendChild(messageArea);
 
     // ★ 今日の新しい3行：クリックした瞬間に、画面上の数字を最新にする
