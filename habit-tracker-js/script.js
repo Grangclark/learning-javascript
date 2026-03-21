@@ -62,6 +62,12 @@ checkBtn.addEventListener('click', () => {
     }
     streakDisplay.innerText = `現在 ${streak} 日連続達成中！ 🔥`;
 
+    // ★ 今日の新しい4行：古いメッセージがあれば消してから、新しく作る
+    const oldMsg = document.querySelector('.congrats-msg');
+    if (oldMsg) {
+        oldMsg.remove();
+    }    
+
     // ★ 今日の新しい4行：特定の回数で「おめでとう」を出す準備
     const messageArea = document.createElement('div');
     messageArea.className = 'congrats-msg';
