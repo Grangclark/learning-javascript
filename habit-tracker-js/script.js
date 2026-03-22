@@ -46,11 +46,16 @@ checkBtn.addEventListener('click', () => {
 
     // ★ 今日の新しい4行：昨日の日付と一致するかでストリークを更新する
     let streak = parseInt(localStorage.getItem('habitStreak')) || 0;
+
     if (lastDate === yesterdayStr) {
         streak++;
     } else {
         streak = 1;
     }
+
+    // テスト用
+    streak = 3;
+
     localStorage.setItem('habitStreak', streak);
 
     // ★ 今日の新しい4行：既存の表示を探して、スマートに更新する
@@ -79,6 +84,13 @@ checkBtn.addEventListener('click', () => {
     else messageArea.innerText = `現在 ${streak} 日目！明日も頑張ろう！`;
     
     document.body.appendChild(messageArea);
+
+    // ★ 今日の新しい4行：メッセージに「動き」のきっかけを与える
+    messageArea.classList.add('fade-in');
+    if (streak >= 3) {
+        messageArea.style.fontSize = "20px";
+        messageArea.style.fontWeight = "bold";
+    }
 
     // ★ 今日の新しい3行：クリックした瞬間に、画面上の数字を最新にする
     const countDisplay = document.querySelector('p');
