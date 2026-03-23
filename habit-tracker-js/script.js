@@ -54,7 +54,7 @@ checkBtn.addEventListener('click', () => {
     }
 
     // テスト用
-    streak = 3;
+    streak = 20;
 
     localStorage.setItem('habitStreak', streak);
 
@@ -76,6 +76,13 @@ checkBtn.addEventListener('click', () => {
     // ★ 今日の新しい4行：特定の回数で「おめでとう」を出す準備
     const messageArea = document.createElement('div');
     messageArea.className = 'congrats-msg';
+
+    // ★ 今日の新しい4行：20日記念の特別演出を追加
+    if (streak === 20) {
+        messageArea.innerText = '✨ 祝・20日継続！もはやプロの習慣化エンジニアですね！ ✨';
+        messageArea.style.backgroundColor = '#fff3b0'; // 背景を少しリッチな色に
+        messageArea.style.border = '2px solid orange'; // 枠線を付けて目立たせる
+    }
 
     // ★ 今日の新しい4行：10日、30日など節目のメッセージを追加する
     if (streak >= 30) messageArea.innerText = '1ヶ月達成！神の領域です！👑';
