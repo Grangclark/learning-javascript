@@ -82,6 +82,12 @@ checkBtn.addEventListener('click', () => {
         messageArea.innerText = '✨ 祝・20日継続！もはやプロの習慣化エンジニアですね！ ✨';
         messageArea.style.backgroundColor = '#fff3b0'; // 背景を少しリッチな色に
         messageArea.style.border = '2px solid orange'; // 枠線を付けて目立たせる
+
+        // ★ 今日の新しい4行：20日記念メッセージをさらに豪華にする
+        messageArea.style.padding = '10px';
+        messageArea.style.borderRadius = '8px';
+        messageArea.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+        messageArea.style.textAlign = 'center';
     }
 
     // ★ 今日の新しい4行：10日、30日など節目のメッセージを追加する
