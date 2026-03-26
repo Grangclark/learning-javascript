@@ -88,10 +88,17 @@ checkBtn.addEventListener('click', () => {
         messageArea.style.borderRadius = '8px';
         messageArea.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
         messageArea.style.textAlign = 'center';
+
+        // ★ 今日の新しい4行：20日記念メッセージをモダンなカードデザインにする
+        messageArea.style.margin = '20px auto';
+        messageArea.style.maxWidth = '300px';
+        messageArea.style.lineHeight = '1.6';
+        messageArea.style.color = '#856404'; // 深みのあるゴールド系の文字色
     }
 
     // ★ 今日の新しい4行：10日、30日など節目のメッセージを追加する
     if (streak >= 30) messageArea.innerText = '1ヶ月達成！神の領域です！👑';
+    else if (streak >= 20) ;
     else if (streak >= 10) messageArea.innerText = '10日突破！習慣のプロですね！✨';
     else if (streak >= 7) messageArea.innerText = '1週間継続中！すごい！👏';
     else messageArea.innerText = `現在 ${streak} 日目！明日も頑張ろう！`;
