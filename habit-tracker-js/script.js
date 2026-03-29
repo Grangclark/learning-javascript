@@ -15,8 +15,13 @@ checkBtn.addEventListener('click', () => {
     checkBtn.disabled = true;
 
     // ★ 今日の新しい3行：時間を記録する
-    const now = new Date().toLocaleString();
-    localStorage.setItem('lastHabitDate', now);
+    // 修正前
+    // const now = new Date().toLocaleString();
+    // localStorage.setItem('lastHabitDate', now);
+
+    // 修正後（今日の日付を保存するように変更）
+    localStorage.setItem('lastHabitDate', today);
+
     console.log("保存完了！：", now);
 
     // 1. 保存された日付を読み出す
@@ -43,6 +48,13 @@ checkBtn.addEventListener('click', () => {
     yesterday.setDate(yesterday.getDate() - 1);
     const yesterdayStr = yesterday.toLocaleDateString();
     const lastDate = localStorage.getItem('lastHabitDate');
+
+    // ★ 今日の新しい4行：今日すでに達成済みなら、ストリーク更新をスキップする
+    const lastSavedDate = localStorage.getItem('lastHabitDate');
+    if (lastSavedDate === today) {
+        return; // 今日すでに押されていたら、ここで処理を終了する
+    }
+    localStorage.setItem('lastHabitDate', today);
 
     // ★ 今日の新しい4行：昨日の日付と一致するかでストリークを更新する
     let streak = parseInt(localStorage.getItem('habitStreak')) || 0;
