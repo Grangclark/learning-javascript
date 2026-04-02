@@ -3,4 +3,9 @@
   "name": "My First Extension",
   "version": "1.0",
   "action": { "default_popup": "index.html" }
+  // manifest.json の "action" の後に追加
+  "content_scripts": [{
+    "matches": ["https://www.youtube.com/*"],
+    "js": ["content.js"]
+  }]
 }
