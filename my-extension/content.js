@@ -12,4 +12,10 @@ setInterval(() => {
 
     const pauseOverlay = document.querySelector('.ytp-pause-overlay');
     if (pauseOverlay) pauseOverlay.remove();
+
+    // ★ 今日の4行：コメント欄を狙い撃ち
+    const comments = document.getElementById('comments');
+    if (comments) {
+        comments.remove();
+    }
 }, 500);
