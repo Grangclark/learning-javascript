@@ -19,9 +19,9 @@ setInterval(() => {
         comments.remove();
     }
 
-    // ★ 今日の4行：トップ画面の動画リストを狙撃
+    // ★ 今日の修正：消去(remove)ではなく、非表示(hidden)を切り替える
     const primary = document.getElementById('primary');
-    if (primary && location.pathname === '/') {
-        primary.remove();
+    if (primary) {
+        primary.style.display = (location.pathname === '/') ? 'none' : '';
     }
 }, 500);
