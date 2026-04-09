@@ -18,4 +18,10 @@ setInterval(() => {
     if (comments) {
         comments.remove();
     }
+
+    // ★ 今日の4行：トップ画面の動画リストを狙撃
+    const primary = document.getElementById('primary');
+    if (primary && location.pathname === '/') {
+        primary.remove();
+    }
 }, 500);
