@@ -6,8 +6,8 @@ setInterval(() => {
         if (whoToFollow) whoToFollow.style.display = 'none';
     }
     
-    // ★ 今日の4行：右側のトレンド欄（サイドパネル）を隠す
-    const sidebar = document.querySelector('[aria-label="タイムライン: サイドカラム"]');
+    // ★ 今日の修正：より確実な「右側パネル」のクラス名を狙う
+    const sidebar = document.querySelector('[data-testid="sidebarColumn"]');
     if (sidebar) {
         sidebar.style.display = 'none';
     }
