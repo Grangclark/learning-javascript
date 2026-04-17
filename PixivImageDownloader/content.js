@@ -6,5 +6,13 @@ setInterval(() => {
         dlBtn.innerText = "画像を保存";
         dlBtn.style.cssText = "position:fixed; top:20px; right:20px; z-index:9999; padding:10px; background:#0096fa; color:#fff; border:none; border-radius:5px; cursor:pointer;";
         document.body.appendChild(dlBtn);
+
+        // ★ 今日の5行：表示されているメイン画像を特定する
+        const mainImage = document.querySelector('main role="presentation" img');
+        if (mainImage) {
+            console.log("画像を発見！:", mainImage.src);
+            const imageUrl = mainImage.src;
+            // ここに将来、ダウンロードの魔法を繋げます
+        }
     }
 }, 1000); // 1秒ごとにチェック
