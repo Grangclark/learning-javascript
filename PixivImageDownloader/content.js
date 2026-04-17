@@ -8,7 +8,8 @@ setInterval(() => {
         document.body.appendChild(dlBtn);
 
         // ★ 今日の5行：表示されているメイン画像を特定する
-        const mainImage = document.querySelector('main role="presentation" img');
+        // ★ 修正後の1行：属性を [ ] で囲むのが正解！
+        const mainImage = document.querySelector('main [role="presentation"] img');
         if (mainImage) {
             console.log("画像を発見！:", mainImage.src);
             const imageUrl = mainImage.src;
