@@ -13,7 +13,19 @@ setInterval(() => {
         if (mainImage) {
             console.log("画像を発見！:", mainImage.src);
             const imageUrl = mainImage.src;
-            // ここに将来、ダウンロードの魔法を繋げます
+            // ★ 今日の5行：ボタンが押されたらダウンロードを実行する
+            // content.js：ボタンが押された瞬間に、改めて最新の画面から画像を探す
+            dlBtn.onclick = () => {
+                // ボタンを押した瞬間に、現在の画面に img があるか探しに行く
+                const mainImage = document.querySelector('main [role="presentation"] img');
+                
+                if (mainImage) {
+                    console.log("画像を発見しました！:", mainImage.src);
+                    chrome.runtime.sendMessage({ message: "download", url: mainImage.src });
+                } else {
+                    alert("まだ画像が読み込まれていないか、見つかりません。");
+                }
+            };
         }
     }
 }, 1000); // 1秒ごとにチェック
