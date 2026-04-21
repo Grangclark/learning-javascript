@@ -15,17 +15,16 @@ setInterval(() => {
             const imageUrl = mainImage.src;
             // ★ 今日の5行：ボタンが押されたらダウンロードを実行する
             // content.js：ボタンが押された瞬間に、改めて最新の画面から画像を探す
+            // ★ 今日の修正：メッセージが届いたか確認する機能を追加
             dlBtn.onclick = () => {
-                // ボタンを押した瞬間に、現在の画面に img があるか探しに行く
                 const mainImage = document.querySelector('main [role="presentation"] img');
-                
                 if (mainImage) {
-                    console.log("画像を発見しました！:", mainImage.src);
-                    chrome.runtime.sendMessage({ message: "download", url: mainImage.src });
-                } else {
-                    alert("まだ画像が読み込まれていないか、見つかりません。");
+                    chrome.runtime.sendMessage({ message: "download", url: mainImage.src }, (response) => {
+                        console.log("裏側（background）からの返事:", response);
+                    });
                 }
             };
         }
     }
 }, 1000); // 1秒ごとにチェック
+console.log("PixivImageDownloader、起動しました！");
