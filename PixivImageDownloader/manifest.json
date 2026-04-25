@@ -1,22 +1,21 @@
 {
   "manifest_version": 3,
   "name": "PixivImageDownloader",
-  "version": "2.1",
-  "description": "Simple image downloader for pixiv",
+  "version": "3.0",
+  "description": "Simple image downloader for pixiv with Referer spoofing",
   "permissions": [
-    "downloads"
+    "downloads",
+    "declarativeNetRequest"
+  ],
+  "host_permissions": [
+    "https://*.pximg.net/*"
   ],
   "background": {
     "service_worker": "background.js"
   },
-  "action": {
-    "default_popup": "index.html"
-  },
   "content_scripts": [
     {
-      "matches": [
-        "https://www.pixiv.net/*"
-      ],
+      "matches": ["https://www.pixiv.net/*"],
       "js": ["content.js"]
     }
   ]
