@@ -1,4 +1,4 @@
-// background.js：URLをコンソールに出して、リファラ偽装ルールを適用する
+// background.js：あらゆる身分証を pixiv に書き換えて、門番を突破する
 chrome.declarativeNetRequest.updateDynamicRules({
     removeRuleIds: [1],
     addRules: [{
@@ -6,27 +6,34 @@ chrome.declarativeNetRequest.updateDynamicRules({
         priority: 1,
         action: {
             type: "modifyHeaders",
-            requestHeaders: [{ header: "Referer", operation: "set", value: "https://www.pixiv.net/" }]
+            requestHeaders: [
+                // 1. 「pixivのページ内から来ました」という証明
+                { header: "Referer", operation: "set", value: "https://www.pixiv.net/" },
+                // 2. 「pixivというサイトがリクエストしています」という証明
+                { header: "Origin", operation: "set", value: "https://www.pixiv.net" },
+                // 3. ブラウザに「リファラを隠さないで！」と強制する
+                { header: "Referrer-Policy", operation: "set", value: "no-referrer-when-downgrade" }
+            ]
         },
-        condition: { urlFilter: "pximg.net", resourceTypes: ["xmlhttprequest", "main_frame", "sub_frame", "image", "other"] }
+        condition: { 
+            urlFilter: "pximg.net", 
+            resourceTypes: ["xmlhttprequest", "main_frame", "sub_frame", "image", "other"] 
+        }
     }]
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.message === "download") {
-        // ★ ここで受け取ったURLをコンソールに表示します
-        console.log("【受領】保存を開始するURL:", request.url);
-
+        console.log("【最終作戦開始】URL:", request.url);
         chrome.downloads.download({
             url: request.url,
             filename: "pixiv_image.jpg",
             saveAs: false
-        }, (downloadId) => {
+        }, (id) => {
             if (chrome.runtime.lastError) {
-                console.error("DLエラー:", chrome.runtime.lastError.message);
                 sendResponse("失敗: " + chrome.runtime.lastError.message);
             } else {
-                sendResponse("成功！ ID: " + downloadId);
+                sendResponse("成功！ ID: " + id);
             }
         });
     }
