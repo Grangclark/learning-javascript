@@ -1,41 +1,16 @@
-// background.js：あらゆる身分証を pixiv に書き換えて、門番を突破する
-chrome.declarativeNetRequest.updateDynamicRules({
-    removeRuleIds: [1],
-    addRules: [{
-        id: 1,
-        priority: 1,
-        action: {
-            type: "modifyHeaders",
-            requestHeaders: [
-                // 1. 「pixivのページ内から来ました」という証明
-                { header: "Referer", operation: "set", value: "https://www.pixiv.net/" },
-                // 2. 「pixivというサイトがリクエストしています」という証明
-                { header: "Origin", operation: "set", value: "https://www.pixiv.net" },
-                // 3. ブラウザに「リファラを隠さないで！」と強制する
-                { header: "Referrer-Policy", operation: "set", value: "no-referrer-when-downgrade" }
-            ]
-        },
-        condition: { 
-            urlFilter: "pximg.net", 
-            resourceTypes: ["xmlhttprequest", "main_frame", "sub_frame", "image", "other"] 
-        }
-    }]
-});
-
+// background.js：特権権限で画像を fetch し、Base64形式で content.js へ届ける
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.message === "download") {
-        console.log("【最終作戦開始】URL:", request.url);
-        chrome.downloads.download({
-            url: request.url,
-            filename: "pixiv_image.jpg",
-            saveAs: false
-        }, (id) => {
-            if (chrome.runtime.lastError) {
-                sendResponse("失敗: " + chrome.runtime.lastError.message);
-            } else {
-                sendResponse("成功！ ID: " + id);
-            }
-        });
+    if (request.message === "download_blob") {
+        fetch(request.url, {
+            headers: { "Referer": "https://www.pixiv.net/" }
+        })
+        .then(response => response.blob())
+        .then(blob => {
+            const reader = new FileReader();
+            reader.onloadend = () => sendResponse({ dataUrl: reader.result });
+            reader.readAsDataURL(blob); // BlobをBase64文字列に変換して送る
+        })
+        .catch(error => sendResponse({ error: error.message }));
+        return true; // 非同期通信を維持
     }
-    return true;
 });
