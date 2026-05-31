@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "5ch.io Viewer",
+  "version": "1.0",
+  "description": "5ch.ioの板一覧を表示するアプリ",
+  "permissions": [],
+  "host_permissions": [
+    "https://*.5ch.io/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "index.html"
+  }
+}
