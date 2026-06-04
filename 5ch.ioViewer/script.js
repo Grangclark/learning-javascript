@@ -68,19 +68,31 @@ function fetchThreadList(boardUrl) {
             document.querySelector("h3").innerText = "5ch.io スレッド一覧";
 
             // 5. 集めたスレタイのリンクを画面に並べる
+            // 昨日の links.forEach の中身を以下にアップデート
             links.forEach(link => {
-                const href = link.getAttribute("href"); // 例: "1712345678/" のような相対パスが入っている
+                const href = link.getAttribute("href"); // 例: "1779968763/" などの相対パス
                 const text = link.innerText.trim();
 
                 if (href && text) {
                     const li = document.createElement("li");
                     const a = document.createElement("a");
 
-                    // ★5chの仕様：subback内のリンクは相対パスなので、板のベースURLと合体させる
-                    // 例: https://egg.5ch.io/game/ + 1712345678/ -> 本物のスレURL
-                    // ただし、5chは /test/read.cgi/板名/スレID/ に移動させる必要があるので、まずはそのまま結合するか本家URLにします
-                    // 今回はシンプルに、5chが用意したbaseタグのURLを考慮して結合します
-                    a.href = baseUrl + href; 
+                    // --- ★ここから【今日の一撃】URLの変換ロジック ---
+                    // 1. 現在の板URL（baseUrl）から、ドメインやサーバー名、板名を取得する
+                    // 例: baseUrl = "https://egg.5ch.io/game/"
+                    const urlObj = new URL(baseUrl); 
+                    const serverName = urlObj.hostname.split('.')[0]; // "egg" や "greta" を取得
+                    const boardName = urlObj.pathname.replace(/\//g, ""); // "game" や "poverty" を取得
+
+                    // 2. 末尾の不要な "/l50" やスラッシュを綺麗に掃除してスレIDだけにする
+                    // href が "1779968763/" や "1779968763/l50" だった場合、数字だけを抽出
+                    const threadId = href.split("/")[0]; 
+
+                    // 3. 発見した法則通りにURLをガッチャンコする
+                    const finalUrl = `https://itest.5ch.io/${serverName}/test/read.cgi/${boardName}/${threadId}`;
+                    // --- ★ここまで ---
+
+                    a.href = finalUrl;
                     a.innerText = text;
                     a.target = "_blank"; // クリックしたらブラウザの新しいタブで開く
 
