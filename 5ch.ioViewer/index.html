@@ -4,13 +4,21 @@
     <meta charset="UTF-8">
     <title>5ch.io Viewer</title>
     <style>
-        /* ちょっとだけ見やすくするための文字サイズ調整 */
         body { width: 300px; font-family: sans-serif; font-size: 14px; }
         ul { padding-left: 20px; }
+        /* ★ボタンをちょっとだけ見やすくするデザイン */
+        #back-btn {
+            margin-bottom: 10px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <h3>5ch.io 板一覧</h3>
+    
+    <button id="back-btn" style="display: none;">← 板一覧に戻る</button>
+
     <ul id="bbs-list">読み込み中...</ul>
 
     <script src="script.js"></script>
