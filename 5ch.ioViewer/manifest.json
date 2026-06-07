@@ -3,7 +3,9 @@
   "name": "5ch.io Viewer",
   "version": "1.0",
   "description": "5ch.ioの板一覧を表示するアプリ",
-  "permissions": [],
+  "permissions": [
+    "storage"
+  ],
   "host_permissions": [
     "https://*.5ch.io/*"
   ],
