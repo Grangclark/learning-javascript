@@ -1,19 +1,20 @@
 // script.js
 
-// ★【今日新しく追加】履歴を読み込んで画面に表示する関数
+// ★【今日新しく追加】スレッドの元データを一時保存するためのグローバル変数
+let currentThreadLinks = []; 
+let currentBaseUrl = "";
+
 function displayHistory() {
     chrome.storage.local.get(["threadHistory"], (result) => {
         const historyList = document.getElementById("history-list");
         const historySection = document.getElementById("history-section");
         const history = result.threadHistory || [];
 
-        // 履歴が空っぽなら、エリアごと隠す
         if (history.length === 0) {
             historySection.style.display = "none";
             return;
         }
 
-        // 履歴があれば表示する
         historySection.style.display = "block";
         historyList.innerHTML = "";
 
@@ -22,30 +23,20 @@ function displayHistory() {
             const a = document.createElement("a");
             a.href = item.url;
             a.innerText = item.title;
-            a.target = "_blank"; // クリックで一発ジャンプ！
-            
+            a.target = "_blank";
             li.appendChild(a);
             historyList.appendChild(li);
         });
     });
 }
 
-// ★【今日新しく追加】スレをクリックした時に、履歴を保存する関数
 function saveToHistory(title, url) {
     chrome.storage.local.get(["threadHistory"], (result) => {
         let history = result.threadHistory || [];
-
-        // 1. 重複防止
         history = history.filter(item => item.url !== url);
-
-        // 2. 先頭（一番上）に追加
         history.unshift({ title: title, url: url });
-
-        // 3. ★【ここを修正】上から5件だけを確実に切り取る（6件目以降は自動消滅）
-        // 0番目から数えて5件未満（つまり0, 1, 2, 3, 4番目）だけを綺麗に残します
         history = history.slice(0, 5);
 
-        // 4. 保存して、画面の履歴表示を即座に更新する
         chrome.storage.local.set({ threadHistory: history }, () => {
             displayHistory();
         });
@@ -54,12 +45,14 @@ function saveToHistory(title, url) {
 
 // 1. 板一覧を取得して画面に表示する
 function fetchBbsList() {
-    console.log("5ch.io Viewer: backgroundに板一覧 of 取得を依頼します...");
+    console.log("5ch.io Viewer: backgroundに板一覧の取得を依頼します...");
     
     document.getElementById("back-btn").style.display = "none";
+    // ★板一覧に戻ったら検索窓も隠して、入力文字をリセットする
+    document.getElementById("search-container").style.display = "none";
+    document.getElementById("search-input").value = "";
     document.querySelector("h3").innerText = "5ch.io 板一覧";
     
-    // ★板一覧画面の時は履歴を表示する
     displayHistory();
 
     chrome.runtime.sendMessage({ action: "fetch_bbs" }, (response) => {
@@ -100,13 +93,12 @@ function fetchBbsList() {
 
 // 2. スレッド一覧を表示する
 function fetchThreadList(boardUrl) {
-    const baseUrl = boardUrl.endsWith("/") ? boardUrl : boardUrl + "/";
-    const subbackUrl = baseUrl + "subback.html";
+    currentBaseUrl = boardUrl.endsWith("/") ? boardUrl : boardUrl + "/";
+    const subbackUrl = currentBaseUrl + "subback.html";
 
     console.log(`スレッド一覧を取得します: ${subbackUrl}`);
 
     document.getElementById("back-btn").style.display = "block";
-    // ★スレッド一覧画面に切り替わったら、邪魔なので履歴エリアは一時的に隠す
     document.getElementById("history-section").style.display = "none";
 
     chrome.runtime.sendMessage({ action: "fetch_threads", url: subbackUrl }, (response) => {
@@ -117,45 +109,68 @@ function fetchThreadList(boardUrl) {
 
             const parser = new DOMParser();
             const doc = parser.parseFromString(response.data, "text/html");
-            const links = doc.querySelectorAll("a");
+            
+            // ★【ここがポイント】集めたリンクのデータを、後で検索するために変数に保存しておく
+            currentThreadLinks = Array.from(doc.querySelectorAll("a"));
 
-            listContainer.innerHTML = "";
-            document.querySelector("h3").innerText = "5ch.io スレッド一覧";
+            // ★検索窓を表示する
+            document.getElementById("search-container").style.display = "block";
 
-            links.forEach(link => {
-                const href = link.getAttribute("href"); 
-                const text = link.innerText.trim();
-
-                if (href && text) {
-                    const li = document.createElement("li");
-                    const a = document.createElement("a");
-
-                    const urlObj = new URL(baseUrl); 
-                    const serverName = urlObj.hostname.split('.')[0]; 
-                    const boardName = urlObj.pathname.replace(/\//g, ""); 
-                    const threadId = href.split("/")[0]; 
-
-                    const finalUrl = `https://itest.5ch.io/${serverName}/test/read.cgi/${boardName}/${threadId}`;
-                    
-                    a.href = finalUrl;
-                    a.innerText = text;
-                    a.target = "_blank"; 
-
-                    // ★【ここが今日の一撃】スレッドのリンクがクリックされたら、履歴に保存する
-                    a.addEventListener("click", () => {
-                        saveToHistory(text, finalUrl);
-                    });
-
-                    li.appendChild(a);
-                    listContainer.appendChild(li);
-                }
-            });
+            // 最初はキーワード空っぽ（全件表示）で描画する
+            renderThreadList("");
 
         } else {
             listContainer.innerText = "スレッド一覧の取得失敗: " + (response ? response.error : "応答なし");
         }
     });
 }
+
+// ★【今日新しく追加】スレッド一覧を画面に「描画」する専用の関数
+function renderThreadList(keyword) {
+    const listContainer = document.getElementById("bbs-list");
+    listContainer.innerHTML = "";
+    document.querySelector("h3").innerText = "5ch.io スレッド一覧";
+
+    // 検索ワードを英小文字に統一（大文字小文字を区別せずに検索するため）
+    const lowerKeyword = keyword.toLowerCase();
+
+    currentThreadLinks.forEach(link => {
+        const href = link.getAttribute("href"); 
+        const text = link.innerText.trim();
+
+        if (href && text) {
+            // ★【今日の一撃】検索キーワードが含まれているかチェック（空文字の場合は常にtrue）
+            if (text.toLowerCase().includes(lowerKeyword)) {
+                const li = document.createElement("li");
+                const a = document.createElement("a");
+
+                const urlObj = new URL(currentBaseUrl); 
+                const serverName = urlObj.hostname.split('.')[0]; 
+                const boardName = urlObj.pathname.replace(/\//g, ""); 
+                const threadId = href.split("/")[0]; 
+
+                const finalUrl = `https://itest.5ch.io/${serverName}/test/read.cgi/${boardName}/${threadId}`;
+                
+                a.href = finalUrl;
+                a.innerText = text;
+                a.target = "_blank"; 
+
+                a.addEventListener("click", () => {
+                    saveToHistory(text, finalUrl);
+                });
+
+                li.appendChild(a);
+                listContainer.appendChild(li);
+            }
+        }
+    });
+}
+
+// ★【今日新しく追加】検索窓に文字が入力されるたびに、即座に絞り込むイベント
+document.getElementById("search-input").addEventListener("input", (e) => {
+    const keyword = e.target.value;
+    renderThreadList(keyword); // 入力された文字を渡して再描画
+});
 
 // 戻るボタンのイベント
 document.getElementById("back-btn").addEventListener("click", () => {
