@@ -1,9 +1,9 @@
 // script.js
 
-// ★【今日新しく追加】スレッドの元データを一時保存するためのグローバル変数
 let currentThreadLinks = []; 
 let currentBaseUrl = "";
 
+// 履歴表示（既存）
 function displayHistory() {
     chrome.storage.local.get(["threadHistory"], (result) => {
         const historyList = document.getElementById("history-list");
@@ -30,6 +30,7 @@ function displayHistory() {
     });
 }
 
+// 履歴保存（既存）
 function saveToHistory(title, url) {
     chrome.storage.local.get(["threadHistory"], (result) => {
         let history = result.threadHistory || [];
@@ -43,16 +44,90 @@ function saveToHistory(title, url) {
     });
 }
 
-// 1. 板一覧を取得して画面に表示する
+
+// ==========================================
+// ★【今日新しく追加】お気に入り板の管理機能
+// ==========================================
+
+// ① お気に入り板を読み込んでトップページに表示する関数
+function displayFavBoards() {
+    chrome.storage.local.get(["favBoards"], (result) => {
+        const favList = document.getElementById("fav-boards-list");
+        const favSection = document.getElementById("fav-boards-section");
+        const favBoards = result.favBoards || [];
+
+        if (favBoards.length === 0) {
+            favSection.style.display = "none";
+            return;
+        }
+
+        favSection.style.display = "block";
+        favList.innerHTML = "";
+
+        favBoards.forEach(board => {
+            const li = document.createElement("li");
+            li.className = "list-item-container";
+
+            const a = document.createElement("a");
+            a.href = board.url;
+            a.innerText = board.title;
+            a.addEventListener("click", (e) => {
+                e.preventDefault();
+                fetchThreadList(board.url); // クリックでその板のスレ一覧へワープ！
+            });
+
+            // お気に入りエリア内にも解除用の★ボタンを置く
+            const span = document.createElement("span");
+            span.className = "fav-btn";
+            span.innerText = "★";
+            span.addEventListener("click", () => {
+                toggleFavBoard(board.title, board.url, span);
+                // 解除されたらトップページのリストを再描画＆板一覧の星も同期
+                setTimeout(fetchBbsList, 50); 
+            });
+
+            li.appendChild(a);
+            li.appendChild(span);
+            favList.appendChild(li);
+        });
+    });
+}
+
+// ② お気に入り板の「登録 / 解除」を切り替える関数
+function toggleFavBoard(title, url, btnElement) {
+    chrome.storage.local.get(["favBoards"], (result) => {
+        let favBoards = result.favBoards || [];
+        const isExist = favBoards.some(board => board.url === url);
+
+        if (isExist) {
+            // すでに登録されていれば解除（削除）
+            favBoards = favBoards.filter(board => board.url !== url);
+            btnElement.innerText = "☆";
+        } else {
+            // 登録されていなければ追加
+            favBoards.push({ title: title, url: url });
+            btnElement.innerText = "★";
+        }
+
+        chrome.storage.local.set({ favBoards: favBoards }, () => {
+            // トップページのお気に入り表示を更新
+            displayFavBoards();
+        });
+    });
+}
+
+
+// 1. 板一覧を取得して画面に表示する（修正）
 function fetchBbsList() {
     console.log("5ch.io Viewer: backgroundに板一覧の取得を依頼します...");
     
     document.getElementById("back-btn").style.display = "none";
-    // ★板一覧に戻ったら検索窓も隠して、入力文字をリセットする
     document.getElementById("search-container").style.display = "none";
     document.getElementById("search-input").value = "";
     document.querySelector("h3").innerText = "5ch.io 板一覧";
     
+    // ★トップページにお気に入りと履歴を表示
+    displayFavBoards();
     displayHistory();
 
     chrome.runtime.sendMessage({ action: "fetch_bbs" }, (response) => {
@@ -62,36 +137,54 @@ function fetchBbsList() {
             return;
         }
 
-        listContainer.innerHTML = "";
+        // お気に入り登録状況を一度読み込んでから板一覧を描画する
+        chrome.storage.local.get(["favBoards"], (result) => {
+            const favBoards = result.favBoards || [];
+            listContainer.innerHTML = "";
 
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(response.data, "text/html");
-        const links = doc.querySelectorAll("a");
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(response.data, "text/html");
+            const links = doc.querySelectorAll("a");
 
-        links.forEach(link => {
-            const href = link.getAttribute("href");
-            const text = link.innerText.trim();
+            links.forEach(link => {
+                const href = link.getAttribute("href");
+                const text = link.innerText.trim();
 
-            if (href && text) {
-                const li = document.createElement("li");
-                const a = document.createElement("a");
-                
-                a.href = href;
-                a.innerText = text;
+                if (href && text) {
+                    const li = document.createElement("li");
+                    li.className = "list-item-container"; // 横並び用のコンテナ
 
-                a.addEventListener("click", (e) => {
-                    e.preventDefault(); 
-                    fetchThreadList(href); 
-                });
+                    const a = document.createElement("a");
+                    a.href = href;
+                    a.innerText = text;
+                    a.addEventListener("click", (e) => {
+                        e.preventDefault(); 
+                        fetchThreadList(href); 
+                    });
 
-                li.appendChild(a);
-                listContainer.appendChild(li);
-            }
+                    // ★【今日の一撃】☆ボタンを作成
+                    const span = document.createElement("span");
+                    span.className = "fav-btn";
+                    
+                    // すでにお気に入りに登録されているURLなら最初から「★」、違えば「☆」
+                    const isFav = favBoards.some(board => board.url === href);
+                    span.innerText = isFav ? "★" : "☆";
+
+                    // 星がクリックされた時のイベント
+                    span.addEventListener("click", () => {
+                        toggleFavBoard(text, href, span);
+                    });
+
+                    li.appendChild(a);
+                    li.appendChild(span); // リンクの右側に星をドッキング
+                    listContainer.appendChild(li);
+                }
+            });
         });
     });
 }
 
-// 2. スレッド一覧を表示する
+// 2. スレッド一覧を表示する（修正）
 function fetchThreadList(boardUrl) {
     currentBaseUrl = boardUrl.endsWith("/") ? boardUrl : boardUrl + "/";
     const subbackUrl = currentBaseUrl + "subback.html";
@@ -100,6 +193,8 @@ function fetchThreadList(boardUrl) {
 
     document.getElementById("back-btn").style.display = "block";
     document.getElementById("history-section").style.display = "none";
+    // ★スレ一覧画面に移ったら、お気に入り板エリアも一時的に隠す
+    document.getElementById("fav-boards-section").style.display = "none";
 
     chrome.runtime.sendMessage({ action: "fetch_threads", url: subbackUrl }, (response) => {
         const listContainer = document.getElementById("bbs-list");
@@ -110,13 +205,9 @@ function fetchThreadList(boardUrl) {
             const parser = new DOMParser();
             const doc = parser.parseFromString(response.data, "text/html");
             
-            // ★【ここがポイント】集めたリンクのデータを、後で検索するために変数に保存しておく
             currentThreadLinks = Array.from(doc.querySelectorAll("a"));
-
-            // ★検索窓を表示する
             document.getElementById("search-container").style.display = "block";
 
-            // 最初はキーワード空っぽ（全件表示）で描画する
             renderThreadList("");
 
         } else {
@@ -125,13 +216,12 @@ function fetchThreadList(boardUrl) {
     });
 }
 
-// ★【今日新しく追加】スレッド一覧を画面に「描画」する専用の関数
+// スレッドの描画（既存）
 function renderThreadList(keyword) {
     const listContainer = document.getElementById("bbs-list");
     listContainer.innerHTML = "";
     document.querySelector("h3").innerText = "5ch.io スレッド一覧";
 
-    // 検索ワードを英小文字に統一（大文字小文字を区別せずに検索するため）
     const lowerKeyword = keyword.toLowerCase();
 
     currentThreadLinks.forEach(link => {
@@ -139,7 +229,6 @@ function renderThreadList(keyword) {
         const text = link.innerText.trim();
 
         if (href && text) {
-            // ★【今日の一撃】検索キーワードが含まれているかチェック（空文字の場合は常にtrue）
             if (text.toLowerCase().includes(lowerKeyword)) {
                 const li = document.createElement("li");
                 const a = document.createElement("a");
@@ -166,13 +255,13 @@ function renderThreadList(keyword) {
     });
 }
 
-// ★【今日新しく追加】検索窓に文字が入力されるたびに、即座に絞り込むイベント
+// 検索イベント（既存）
 document.getElementById("search-input").addEventListener("input", (e) => {
     const keyword = e.target.value;
-    renderThreadList(keyword); // 入力された文字を渡して再描画
+    renderThreadList(keyword); 
 });
 
-// 戻るボタンのイベント
+// 戻るボタンのイベント（既存）
 document.getElementById("back-btn").addEventListener("click", () => {
     const listContainer = document.getElementById("bbs-list");
     listContainer.innerHTML = "読み込み中..."; 
