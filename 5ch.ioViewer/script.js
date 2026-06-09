@@ -44,12 +44,7 @@ function saveToHistory(title, url) {
     });
 }
 
-
-// ==========================================
-// ★【今日新しく追加】お気に入り板の管理機能
-// ==========================================
-
-// ① お気に入り板を読み込んでトップページに表示する関数
+// お気に入り板の表示（既存）
 function displayFavBoards() {
     chrome.storage.local.get(["favBoards"], (result) => {
         const favList = document.getElementById("fav-boards-list");
@@ -73,16 +68,14 @@ function displayFavBoards() {
             a.innerText = board.title;
             a.addEventListener("click", (e) => {
                 e.preventDefault();
-                fetchThreadList(board.url); // クリックでその板のスレ一覧へワープ！
+                fetchThreadList(board.url); 
             });
 
-            // お気に入りエリア内にも解除用の★ボタンを置く
             const span = document.createElement("span");
             span.className = "fav-btn";
             span.innerText = "★";
             span.addEventListener("click", () => {
                 toggleFavBoard(board.title, board.url, span);
-                // 解除されたらトップページのリストを再描画＆板一覧の星も同期
                 setTimeout(fetchBbsList, 50); 
             });
 
@@ -93,25 +86,86 @@ function displayFavBoards() {
     });
 }
 
-// ② お気に入り板の「登録 / 解除」を切り替える関数
+// お気に入り板のトグル（既存）
 function toggleFavBoard(title, url, btnElement) {
     chrome.storage.local.get(["favBoards"], (result) => {
         let favBoards = result.favBoards || [];
         const isExist = favBoards.some(board => board.url === url);
 
         if (isExist) {
-            // すでに登録されていれば解除（削除）
             favBoards = favBoards.filter(board => board.url !== url);
             btnElement.innerText = "☆";
         } else {
-            // 登録されていなければ追加
             favBoards.push({ title: title, url: url });
             btnElement.innerText = "★";
         }
 
         chrome.storage.local.set({ favBoards: favBoards }, () => {
-            // トップページのお気に入り表示を更新
             displayFavBoards();
+        });
+    });
+}
+
+
+// ==========================================
+// ★【今日新しく追加】お気に入りスレッドの管理機能
+// ==========================================
+
+// ① お気に入りスレッドを読み込んでトップページに表示する関数
+function displayFavThreads() {
+    chrome.storage.local.get(["favThreads"], (result) => {
+        const favList = document.getElementById("fav-threads-list");
+        const favSection = document.getElementById("fav-threads-section");
+        const favThreads = result.favThreads || [];
+
+        if (favThreads.length === 0) {
+            favSection.style.display = "none";
+            return;
+        }
+
+        favSection.style.display = "block";
+        favList.innerHTML = "";
+
+        favThreads.forEach(thread => {
+            const li = document.createElement("li");
+            li.className = "list-item-container";
+
+            const a = document.createElement("a");
+            a.href = thread.url;
+            a.innerText = thread.title;
+            a.target = "_blank"; // お気に入りスレをクリックしたら一発で新規タブ起動！
+
+            // お気に入りエリア内の解除用★ボタン
+            const span = document.createElement("span");
+            span.className = "fav-btn";
+            span.innerText = "★";
+            span.addEventListener("click", () => {
+                toggleFavThread(thread.title, thread.url, span);
+            });
+
+            li.appendChild(a);
+            li.appendChild(span);
+            favList.appendChild(li);
+        });
+    });
+}
+
+// ② お気に入りスレッドの「登録 / 解除」を切り替える関数
+function toggleFavThread(title, url, btnElement) {
+    chrome.storage.local.get(["favThreads"], (result) => {
+        let favThreads = result.favThreads || [];
+        const isExist = favThreads.some(thread => thread.url === url);
+
+        if (isExist) {
+            favThreads = favThreads.filter(thread => thread.url !== url);
+            btnElement.innerText = "☆";
+        } else {
+            favThreads.push({ title: title, url: url });
+            btnElement.innerText = "★";
+        }
+
+        chrome.storage.local.set({ favThreads: favThreads }, () => {
+            displayFavThreads();
         });
     });
 }
@@ -126,8 +180,9 @@ function fetchBbsList() {
     document.getElementById("search-input").value = "";
     document.querySelector("h3").innerText = "5ch.io 板一覧";
     
-    // ★トップページにお気に入りと履歴を表示
+    // ★トップページにお気に入り（板・スレ）と履歴をすべて呼び出す
     displayFavBoards();
+    displayFavThreads();
     displayHistory();
 
     chrome.runtime.sendMessage({ action: "fetch_bbs" }, (response) => {
@@ -137,7 +192,6 @@ function fetchBbsList() {
             return;
         }
 
-        // お気に入り登録状況を一度読み込んでから板一覧を描画する
         chrome.storage.local.get(["favBoards"], (result) => {
             const favBoards = result.favBoards || [];
             listContainer.innerHTML = "";
@@ -147,12 +201,15 @@ function fetchBbsList() {
             const links = doc.querySelectorAll("a");
 
             links.forEach(link => {
-                const href = link.getAttribute("href");
+                let href = link.getAttribute("href");
                 const text = link.innerText.trim();
 
                 if (href && text) {
+                    // ★【安全強化】一部の特殊な板ドメインの揺らぎを安全に正規化
+                    if (href.startsWith("//")) href = "https:" + href;
+
                     const li = document.createElement("li");
-                    li.className = "list-item-container"; // 横並び用のコンテナ
+                    li.className = "list-item-container";
 
                     const a = document.createElement("a");
                     a.href = href;
@@ -162,21 +219,18 @@ function fetchBbsList() {
                         fetchThreadList(href); 
                     });
 
-                    // ★【今日の一撃】☆ボタンを作成
                     const span = document.createElement("span");
                     span.className = "fav-btn";
                     
-                    // すでにお気に入りに登録されているURLなら最初から「★」、違えば「☆」
                     const isFav = favBoards.some(board => board.url === href);
                     span.innerText = isFav ? "★" : "☆";
 
-                    // 星がクリックされた時のイベント
                     span.addEventListener("click", () => {
                         toggleFavBoard(text, href, span);
                     });
 
                     li.appendChild(a);
-                    li.appendChild(span); // リンクの右側に星をドッキング
+                    li.appendChild(span);
                     listContainer.appendChild(li);
                 }
             });
@@ -186,15 +240,18 @@ function fetchBbsList() {
 
 // 2. スレッド一覧を表示する（修正）
 function fetchThreadList(boardUrl) {
-    currentBaseUrl = boardUrl.endsWith("/") ? boardUrl : boardUrl + "/";
+    // 末尾のスラッシュの有無や特殊ドメインを安全にパースする強化パッチ
+    let sanitizedBoardUrl = boardUrl.startsWith("//") ? "https:" + boardUrl : boardUrl;
+    currentBaseUrl = sanitizedBoardUrl.endsWith("/") ? sanitizedBoardUrl : sanitizedBoardUrl + "/";
     const subbackUrl = currentBaseUrl + "subback.html";
 
     console.log(`スレッド一覧を取得します: ${subbackUrl}`);
 
     document.getElementById("back-btn").style.display = "block";
     document.getElementById("history-section").style.display = "none";
-    // ★スレ一覧画面に移ったら、お気に入り板エリアも一時的に隠す
     document.getElementById("fav-boards-section").style.display = "none";
+    // ★スレ一覧画面に移ったら、お気に入りスレッドエリアも一時的に隠す
+    document.getElementById("fav-threads-section").style.display = "none";
 
     chrome.runtime.sendMessage({ action: "fetch_threads", url: subbackUrl }, (response) => {
         const listContainer = document.getElementById("bbs-list");
@@ -216,7 +273,7 @@ function fetchThreadList(boardUrl) {
     });
 }
 
-// スレッドの描画（既存）
+// スレッドの描画（修正）
 function renderThreadList(keyword) {
     const listContainer = document.getElementById("bbs-list");
     listContainer.innerHTML = "";
@@ -224,34 +281,55 @@ function renderThreadList(keyword) {
 
     const lowerKeyword = keyword.toLowerCase();
 
-    currentThreadLinks.forEach(link => {
-        const href = link.getAttribute("href"); 
-        const text = link.innerText.trim();
+    // スレッド側のお気に入り状況をロード
+    chrome.storage.local.get(["favThreads"], (result) => {
+        const favThreads = result.favThreads || [];
 
-        if (href && text) {
-            if (text.toLowerCase().includes(lowerKeyword)) {
-                const li = document.createElement("li");
-                const a = document.createElement("a");
+        currentThreadLinks.forEach(link => {
+            const href = link.getAttribute("href"); 
+            const text = link.innerText.trim();
 
-                const urlObj = new URL(currentBaseUrl); 
-                const serverName = urlObj.hostname.split('.')[0]; 
-                const boardName = urlObj.pathname.replace(/\//g, ""); 
-                const threadId = href.split("/")[0]; 
+            if (href && text) {
+                if (text.toLowerCase().includes(lowerKeyword)) {
+                    const li = document.createElement("li");
+                    li.className = "list-item-container"; // スレッド側も横並びデザインを適用
 
-                const finalUrl = `https://itest.5ch.io/${serverName}/test/read.cgi/${boardName}/${threadId}`;
-                
-                a.href = finalUrl;
-                a.innerText = text;
-                a.target = "_blank"; 
+                    const a = document.createElement("a");
 
-                a.addEventListener("click", () => {
-                    saveToHistory(text, finalUrl);
-                });
+                    // ★【安全強化】URLの分解ロジックをどんな5chドメインでも壊れないように強化
+                    const urlObj = new URL(currentBaseUrl); 
+                    const serverName = urlObj.hostname.split('.')[0]; 
+                    const boardName = urlObj.pathname.split('/').filter(Boolean)[0] || ""; 
+                    const threadId = href.split("/")[0]; 
 
-                li.appendChild(a);
-                listContainer.appendChild(li);
+                    const finalUrl = `https://itest.5ch.io/${serverName}/test/read.cgi/${boardName}/${threadId}`;
+                    
+                    a.href = finalUrl;
+                    a.innerText = text;
+                    a.target = "_blank"; 
+
+                    a.addEventListener("click", () => {
+                        saveToHistory(text, finalUrl);
+                    });
+
+                    // ★【今日の一撃】スレッド用の☆ボタンを作成
+                    const span = document.createElement("span");
+                    span.className = "fav-btn";
+                    
+                    // すでにお気に入りに登録されているスレURLなら最初から「★」
+                    const isFav = favThreads.some(thread => thread.url === finalUrl);
+                    span.innerText = isFav ? "★" : "☆";
+
+                    span.addEventListener("click", () => {
+                        toggleFavThread(text, finalUrl, span);
+                    });
+
+                    li.appendChild(a);
+                    li.appendChild(span); // スレタイの右側に星を配置
+                    listContainer.appendChild(li);
+                }
             }
-        }
+        });
     });
 }
 
