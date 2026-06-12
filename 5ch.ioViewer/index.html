@@ -17,10 +17,13 @@
         #history-list { margin: 0; padding-left: 20px; }
 
         /* 検索とソートのデザイン */
+        /* ★新しく追加：板検索窓のデザイン */
+        #board-search-container { margin-bottom: 10px; }
+        #board-search-input { width: 93%; padding: 5px; font-size: 14px; background-color: #f9f9f9; border: 1px solid #ccc; border-radius: 4px; }
+
         #search-container { margin-bottom: 5px; }
         #search-input { width: 93%; padding: 5px; font-size: 14px; }
         
-        /* ★新しく追加：ソートボタンのデザイン */
         #sort-container { margin-bottom: 10px; display: flex; gap: 5px; }
         .sort-btn { flex: 1; padding: 4px; font-size: 12px; cursor: pointer; }
 
@@ -45,6 +48,10 @@
     </div>
 
     <button id="back-btn" style="display: none;">← 板一覧に戻る</button>
+
+    <div id="board-search-container">
+        <input type="text" id="board-search-input" placeholder="板名で絞り込み（例: ゲーム）...">
+    </div>
 
     <div id="search-container" style="display: none;">
         <input type="text" id="search-input" placeholder="スレッド名で絞り込み...">

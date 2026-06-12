@@ -1,8 +1,10 @@
 // script.js
 
+// ★【今日新しく追加】板の一覧データを一時保存するためのグローバル変数
+let currentBbsLinks = []; 
 let currentThreadLinks = []; 
 let currentBaseUrl = "";
-let currentSortMode = "default"; // "default" または "momentum"
+let currentSortMode = "default"; 
 
 // 履歴表示（既存）
 function displayHistory() {
@@ -165,23 +167,19 @@ function toggleFavThread(title, url, btnElement) {
     });
 }
 
-// ★【今日新しく追加】スレッドの「勢い」を数式に基づいて計算する関数
+// 勢い計算（既存）
 function calculateMomentum(href, text) {
-    // 1. スレタイの末尾の (502) のような文字から数字だけを引っこ抜く
     const resMatch = text.match(/\((\d+)\)$/);
     if (!resMatch) return 0;
-    const resCount = parseInt(resMatch[1], 10); // 総レス数 (例: 502)
+    const resCount = parseInt(resMatch[1], 10);
 
-    // 2. href ("1779968763/") から誕生時刻のタイムスタンプを取得
     const threadId = href.split("/")[0];
-    const createdTime = parseInt(threadId, 10) * 1000; // ミリ秒に変換
+    const createdTime = parseInt(threadId, 10) * 1000;
     if (isNaN(createdTime)) return 0;
 
-    // 3. 現在時刻との差分から「経過日数」を計算 (最低でも0.1日として計算し、ゼロ除算を防ぐ)
     const now = Date.now();
     const diffDays = Math.max((now - createdTime) / (1000 * 60 * 60 * 24), 0.1);
 
-    // 4. 勢い ＝ 総レス数 ÷ 経過日数
     return resCount / diffDays;
 }
 
@@ -192,14 +190,22 @@ function fetchBbsList() {
     
     document.getElementById("back-btn").style.display = "none";
     document.getElementById("search-container").style.display = "none";
-    // ★板一覧に戻ったらソートボタンエリアも隠す
     document.getElementById("sort-container").style.display = "none";
+    
+    // ★板一覧画面に戻ったら、板検索窓を表示する
+    document.getElementById("board-search-container").style.display = "block";
     document.getElementById("search-input").value = "";
     document.querySelector("h3").innerText = "5ch.io 板一覧";
     
     displayFavBoards();
     displayFavThreads();
     displayHistory();
+
+    // すでにデータを取得済みなら、ネットワーク通信をスキップして再描画（爆速化）
+    if (currentBbsLinks.length > 0) {
+        renderBbsList(document.getElementById("board-search-input").value);
+        return;
+    }
 
     chrome.runtime.sendMessage({ action: "fetch_bbs" }, (response) => {
         const listContainer = document.getElementById("bbs-list");
@@ -208,19 +214,33 @@ function fetchBbsList() {
             return;
         }
 
-        chrome.storage.local.get(["favBoards"], (result) => {
-            const favBoards = result.favBoards || [];
-            listContainer.innerHTML = "";
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(response.data, "text/html");
+        
+        // ★【ここがポイント】落としてきた全「板」のリンクデータを配列に記憶
+        currentBbsLinks = Array.from(doc.querySelectorAll("a"));
 
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(response.data, "text/html");
-            const links = doc.querySelectorAll("a");
+        // 初回描画（現在の入力キーワードを反映）
+        renderBbsList(document.getElementById("board-search-input").value);
+    });
+}
 
-            links.forEach(link => {
-                let href = link.getAttribute("href");
-                const text = link.innerText.trim();
+// ★【今日新しく追加】「板一覧」を画面に絞り込み描画する専用の関数
+function renderBbsList(keyword) {
+    const listContainer = document.getElementById("bbs-list");
+    listContainer.innerHTML = "";
+    const lowerKeyword = keyword.toLowerCase();
 
-                if (href && text) {
+    chrome.storage.local.get(["favBoards"], (result) => {
+        const favBoards = result.favBoards || [];
+
+        currentBbsLinks.forEach(link => {
+            let href = link.getAttribute("href");
+            const text = link.innerText.trim();
+
+            if (href && text) {
+                // 入力文字が含まれているか検品（空文字なら全件パス）
+                if (text.toLowerCase().includes(lowerKeyword)) {
                     if (href.startsWith("//")) href = "https:" + href;
 
                     const li = document.createElement("li");
@@ -248,14 +268,18 @@ function fetchBbsList() {
                     li.appendChild(span);
                     listContainer.appendChild(li);
                 }
-            });
+            }
         });
+        
+        if (listContainer.children.length === 0) {
+            listContainer.innerText = "一致する板が見つかりません。";
+        }
     });
 }
 
+
 // 2. スレッド一覧を表示する（修正）
 function fetchThreadList(boardUrl) {
-    // ★【履歴バグ修正パッチ】お気に入り板から飛んできた時も、確実に安全にURLを検知・記憶させる
     let sanitizedBoardUrl = boardUrl.startsWith("//") ? "https:" + boardUrl : boardUrl;
     currentBaseUrl = sanitizedBoardUrl.endsWith("/") ? sanitizedBoardUrl : sanitizedBoardUrl + "/";
     
@@ -267,6 +291,8 @@ function fetchThreadList(boardUrl) {
     document.getElementById("history-section").style.display = "none";
     document.getElementById("fav-boards-section").style.display = "none";
     document.getElementById("fav-threads-section").style.display = "none";
+    // ★スレッド一覧画面に移ったら、板検索窓は一時的に隠す
+    document.getElementById("board-search-container").style.display = "none";
 
     chrome.runtime.sendMessage({ action: "fetch_threads", url: subbackUrl }, (response) => {
         const listContainer = document.getElementById("bbs-list");
@@ -279,11 +305,9 @@ function fetchThreadList(boardUrl) {
             
             currentThreadLinks = Array.from(doc.querySelectorAll("a"));
             
-            // ★画面遷移時に検索窓とソートボタンを出現させる
             document.getElementById("search-container").style.display = "block";
             document.getElementById("sort-container").style.display = "flex";
 
-            // ソート状態をデフォルトに戻して描画
             updateSortButtons("default");
             renderThreadList("");
 
@@ -293,7 +317,7 @@ function fetchThreadList(boardUrl) {
     });
 }
 
-// スレッドの描画（修正）
+// スレッドの描画（既存）
 function renderThreadList(keyword) {
     const listContainer = document.getElementById("bbs-list");
     listContainer.innerHTML = "";
@@ -304,22 +328,19 @@ function renderThreadList(keyword) {
     chrome.storage.local.get(["favThreads"], (result) => {
         const favThreads = result.favThreads || [];
 
-        // 1. 現在のリストをコピーして、検索キーワードに一致するものだけに絞り込む
         let filteredLinks = currentThreadLinks.filter(link => {
             const text = link.innerText.trim();
             return text.toLowerCase().includes(lowerKeyword);
         });
 
-        // 2. ★【今日の一撃】ソートモードが「勢い順」なら、計算した数値が大きい順にソートする
         if (currentSortMode === "momentum") {
             filteredLinks.sort((a, b) => {
                 const momentumA = calculateMomentum(a.getAttribute("href"), a.innerText);
                 const momentumB = calculateMomentum(b.getAttribute("href"), b.innerText);
-                return momentumB - momentumA; // 降順 (大きい順)
+                return momentumB - momentumA; 
             });
         }
 
-        // 3. 確定した並び順で画面にレンダリングする
         filteredLinks.forEach(link => {
             const href = link.getAttribute("href"); 
             const text = link.innerText.trim();
@@ -341,7 +362,6 @@ function renderThreadList(keyword) {
                 a.innerText = text;
                 a.target = "_blank"; 
 
-                // ★【バグ修正完了】お気に入りから遷移しても currentBaseUrl が安全に固定されているため100%履歴に残る
                 a.addEventListener("click", () => {
                     saveToHistory(text, finalUrl);
                 });
@@ -364,7 +384,7 @@ function renderThreadList(keyword) {
     });
 }
 
-// ★【今日新しく追加】ボタンの有効・無効を切り替えるユーティリティ関数
+// ソートボタン切り替え（既存）
 function updateSortButtons(mode) {
     currentSortMode = mode;
     if (mode === "default") {
@@ -376,7 +396,7 @@ function updateSortButtons(mode) {
     }
 }
 
-// ★【今日新しく追加】ソートボタンのクリックイベント
+// ソートボタンイベント（既存）
 document.getElementById("sort-default-btn").addEventListener("click", () => {
     updateSortButtons("default");
     renderThreadList(document.getElementById("search-input").value);
@@ -387,13 +407,19 @@ document.getElementById("sort-momentum-btn").addEventListener("click", () => {
     renderThreadList(document.getElementById("search-input").value);
 });
 
-// 検索イベント
+// ★【今日新しく追加】板検索窓に文字が入力されるたびに即座に絞り込むイベント
+document.getElementById("board-search-input").addEventListener("input", (e) => {
+    const keyword = e.target.value;
+    renderBbsList(keyword);
+});
+
+// スレッド検索イベント（既存）
 document.getElementById("search-input").addEventListener("input", (e) => {
     const keyword = e.target.value;
     renderThreadList(keyword); 
 });
 
-// 戻るボタンのイベント
+// 戻るボタンのイベント（既存）
 document.getElementById("back-btn").addEventListener("click", () => {
     const listContainer = document.getElementById("bbs-list");
     listContainer.innerHTML = "読み込み中..."; 
