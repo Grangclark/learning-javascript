@@ -277,7 +277,6 @@ function renderBbsList(keyword) {
     });
 }
 
-
 // 2. スレッド一覧を表示する（修正）
 function fetchThreadList(boardUrl) {
     let sanitizedBoardUrl = boardUrl.startsWith("//") ? "https:" + boardUrl : boardUrl;
@@ -291,7 +290,6 @@ function fetchThreadList(boardUrl) {
     document.getElementById("history-section").style.display = "none";
     document.getElementById("fav-boards-section").style.display = "none";
     document.getElementById("fav-threads-section").style.display = "none";
-    // ★スレッド一覧画面に移ったら、板検索窓は一時的に隠す
     document.getElementById("board-search-container").style.display = "none";
 
     chrome.runtime.sendMessage({ action: "fetch_threads", url: subbackUrl }, (response) => {
@@ -303,13 +301,20 @@ function fetchThreadList(boardUrl) {
             const parser = new DOMParser();
             const doc = parser.parseFromString(response.data, "text/html");
             
+            // ★【ここを修正】HTML内の <title> タグから「PCゲーム＠5ちゃんねる」のような文字列を取得
+            const rawTitle = doc.querySelector("title") ? doc.querySelector("title").innerText : "";
+            // 「＠5ちゃんねる」や「＠スレッド一覧」という不要な文字を綺麗に削って、純粋な「板名」だけにする
+            const boardNameText = rawTitle.replace(/＠.*/, "").replace("スレッド一覧", "").trim();
+
             currentThreadLinks = Array.from(doc.querySelectorAll("a"));
             
             document.getElementById("search-container").style.display = "block";
             document.getElementById("sort-container").style.display = "flex";
 
             updateSortButtons("default");
-            renderThreadList("");
+            
+            // ★【ここを修正】抽出した「板名」を、描画関数にバトンタッチする
+            renderThreadList("", boardNameText);
 
         } else {
             listContainer.innerText = "スレッド一覧の取得失敗: " + (response ? response.error : "応答なし");
@@ -317,11 +322,22 @@ function fetchThreadList(boardUrl) {
     });
 }
 
-// スレッドの描画（既存）
-function renderThreadList(keyword) {
+// スレッドの描画（修正）
+// ★引数に「boardName」を追加しました
+function renderThreadList(keyword, boardName = "") {
     const listContainer = document.getElementById("bbs-list");
     listContainer.innerHTML = "";
-    document.querySelector("h3").innerText = "5ch.io スレッド一覧";
+    
+    // ★【今日の一撃】板名があれば「〇〇 スレッド一覧」、なければ「5ch.io スレッド一覧」にする
+    if (boardName) {
+        document.querySelector("h3").innerText = `${boardName} スレッド一覧`;
+        // 次の検索やソート（再描画）の時にも板名を使い回せるように、h3の文字をそのままキープする仕組みにします
+    } else {
+        // boardNameが空（検索窓の入力時など）は、すでに書き換わっているh3のタイトルをそのまま維持
+        if (!document.querySelector("h3").innerText.includes("スレッド一覧")) {
+            document.querySelector("h3").innerText = "5ch.io スレッド一覧";
+        }
+    }
 
     const lowerKeyword = keyword.toLowerCase();
 
@@ -353,10 +369,10 @@ function renderThreadList(keyword) {
 
                 const urlObj = new URL(currentBaseUrl); 
                 const serverName = urlObj.hostname.split('.')[0]; 
-                const boardName = urlObj.pathname.split('/').filter(Boolean)[0] || ""; 
+                const boardNameId = urlObj.pathname.split('/').filter(Boolean)[0] || ""; 
                 const threadId = href.split("/")[0]; 
 
-                const finalUrl = `https://itest.5ch.io/${serverName}/test/read.cgi/${boardName}/${threadId}`;
+                const finalUrl = `https://itest.5ch.io/${serverName}/test/read.cgi/${boardNameId}/${threadId}`;
                 
                 a.href = finalUrl;
                 a.innerText = text;
