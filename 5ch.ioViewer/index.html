@@ -17,12 +17,13 @@
         #history-list { margin: 0; padding-left: 20px; }
 
         /* 検索とソートのデザイン */
-        /* ★新しく追加：板検索窓のデザイン */
         #board-search-container { margin-bottom: 10px; }
-        #board-search-input { width: 93%; padding: 5px; font-size: 14px; background-color: #f9f9f9; border: 1px solid #ccc; border-radius: 4px; }
+        /* ★【今日の一撃】横幅を 93% から 100% にして、box-sizing を指定することで、枠線がはみ出さないように綺麗にフィットさせます */
+        #board-search-input { width: 100%; padding: 5px; font-size: 14px; background-color: #f9f9f9; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
 
         #search-container { margin-bottom: 5px; }
-        #search-input { width: 93%; padding: 5px; font-size: 14px; }
+        /* ★【今日の一撃】スレッド検索窓も同様に綺麗にフィットさせます */
+        #search-input { width: 100%; padding: 5px; font-size: 14px; box-sizing: border-box; }
         
         #sort-container { margin-bottom: 10px; display: flex; gap: 5px; }
         .sort-btn { flex: 1; padding: 4px; font-size: 12px; cursor: pointer; }
@@ -50,11 +51,11 @@
     <button id="back-btn" style="display: none;">← 板一覧に戻る</button>
 
     <div id="board-search-container">
-        <input type="text" id="board-search-input" placeholder="板名で絞り込み（例: ゲーム）...">
+        <input type="search" id="board-search-input" placeholder="板名で絞り込み（例: ゲーム）...">
     </div>
 
     <div id="search-container" style="display: none;">
-        <input type="text" id="search-input" placeholder="スレッド名で絞り込み...">
+        <input type="search" id="search-input" placeholder="スレッド名で絞り込み...">
     </div>
 
     <div id="sort-container" style="display: none;">

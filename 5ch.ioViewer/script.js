@@ -442,5 +442,26 @@ document.getElementById("back-btn").addEventListener("click", () => {
     fetchBbsList(); 
 });
 
+// --- 既存の検索イベントを以下のようにアップデート、または追記 ---
+
+// ★板検索窓：文字入力(input)に加えて、×ボタン押下(search)も同時に検知する
+document.getElementById("board-search-input").addEventListener("input", (e) => {
+    renderBbsList(e.target.value);
+});
+// ×ボタンが押されて中身が空になった時用のイベント
+document.getElementById("board-search-input").addEventListener("search", (e) => {
+    renderBbsList(e.target.value); // 空文字が渡るので自動的に全件表示に戻る！
+});
+
+
+// ★スレッド検索窓：文字入力(input)に加えて、×ボタン押下(search)も同時に検知する
+document.getElementById("search-input").addEventListener("input", (e) => {
+    renderThreadList(e.target.value); 
+});
+// ×ボタンが押されて中身が空になった時用のイベント
+document.getElementById("search-input").addEventListener("search", (e) => {
+    renderThreadList(e.target.value); // 空文字が渡るので自動的に全件表示に戻る！
+});
+
 // 最初の起動
 fetchBbsList();
