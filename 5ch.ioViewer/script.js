@@ -1,12 +1,11 @@
 // script.js
 
-// ★【今日新しく追加】板の一覧データを一時保存するためのグローバル変数
 let currentBbsLinks = []; 
 let currentThreadLinks = []; 
 let currentBaseUrl = "";
 let currentSortMode = "default"; 
 
-// 履歴表示（既存）
+// 1. 履歴表示（既存のまま）
 function displayHistory() {
     chrome.storage.local.get(["threadHistory"], (result) => {
         const historyList = document.getElementById("history-list");
@@ -33,7 +32,7 @@ function displayHistory() {
     });
 }
 
-// 履歴保存（既存）
+// 2. 履歴保存（既存のまま）
 function saveToHistory(title, url) {
     chrome.storage.local.get(["threadHistory"], (result) => {
         let history = result.threadHistory || [];
@@ -47,7 +46,7 @@ function saveToHistory(title, url) {
     });
 }
 
-// お気に入り板の表示（既存）
+// 3. お気に入り板の表示（既存のまま）
 function displayFavBoards() {
     chrome.storage.local.get(["favBoards"], (result) => {
         const favList = document.getElementById("fav-boards-list");
@@ -89,7 +88,7 @@ function displayFavBoards() {
     });
 }
 
-// お気に入り板のトグル（既存）
+// 4. お気に入り板のトグル（既存のまま）
 function toggleFavBoard(title, url, btnElement) {
     chrome.storage.local.get(["favBoards"], (result) => {
         let favBoards = result.favBoards || [];
@@ -109,7 +108,7 @@ function toggleFavBoard(title, url, btnElement) {
     });
 }
 
-// お気に入りスレッドの表示（既存）
+// 5. お気に入りスレッドの表示（既存のまま）
 function displayFavThreads() {
     chrome.storage.local.get(["favThreads"], (result) => {
         const favList = document.getElementById("fav-threads-list");
@@ -147,7 +146,7 @@ function displayFavThreads() {
     });
 }
 
-// お気に入りスレッドのトグル（既存）
+// 6. お気に入りスレッドのトグル（既存のまま）
 function toggleFavThread(title, url, btnElement) {
     chrome.storage.local.get(["favThreads"], (result) => {
         let favThreads = result.favThreads || [];
@@ -167,7 +166,7 @@ function toggleFavThread(title, url, btnElement) {
     });
 }
 
-// 勢い計算（既存）
+// 7. 勢い計算（既存のまま）
 function calculateMomentum(href, text) {
     const resMatch = text.match(/\((\d+)\)$/);
     if (!resMatch) return 0;
@@ -183,16 +182,13 @@ function calculateMomentum(href, text) {
     return resCount / diffDays;
 }
 
-
-// 1. 板一覧を取得して画面に表示する（修正）
+// 8. 板一覧を取得して画面に表示する（既存のまま）
 function fetchBbsList() {
     console.log("5ch.io Viewer: backgroundに板一覧の取得を依頼します...");
     
     document.getElementById("back-btn").style.display = "none";
     document.getElementById("search-container").style.display = "none";
     document.getElementById("sort-container").style.display = "none";
-    
-    // ★板一覧画面に戻ったら、板検索窓を表示する
     document.getElementById("board-search-container").style.display = "block";
     document.getElementById("search-input").value = "";
     document.querySelector("h3").innerText = "5ch.io 板一覧";
@@ -201,7 +197,6 @@ function fetchBbsList() {
     displayFavThreads();
     displayHistory();
 
-    // すでにデータを取得済みなら、ネットワーク通信をスキップして再描画（爆速化）
     if (currentBbsLinks.length > 0) {
         renderBbsList(document.getElementById("board-search-input").value);
         return;
@@ -216,16 +211,12 @@ function fetchBbsList() {
 
         const parser = new DOMParser();
         const doc = parser.parseFromString(response.data, "text/html");
-        
-        // ★【ここがポイント】落としてきた全「板」のリンクデータを配列に記憶
         currentBbsLinks = Array.from(doc.querySelectorAll("a"));
-
-        // 初回描画（現在の入力キーワードを反映）
         renderBbsList(document.getElementById("board-search-input").value);
     });
 }
 
-// ★【今日新しく追加】「板一覧」を画面に絞り込み描画する専用の関数
+// 9. 板一覧の描画（既存のまま）
 function renderBbsList(keyword) {
     const listContainer = document.getElementById("bbs-list");
     listContainer.innerHTML = "";
@@ -239,7 +230,6 @@ function renderBbsList(keyword) {
             const text = link.innerText.trim();
 
             if (href && text) {
-                // 入力文字が含まれているか検品（空文字なら全件パス）
                 if (text.toLowerCase().includes(lowerKeyword)) {
                     if (href.startsWith("//")) href = "https:" + href;
 
@@ -277,7 +267,7 @@ function renderBbsList(keyword) {
     });
 }
 
-// 2. スレッド一覧を表示する（修正）
+// 10. スレッド一覧を表示する（既存のまま）
 function fetchThreadList(boardUrl) {
     let sanitizedBoardUrl = boardUrl.startsWith("//") ? "https:" + boardUrl : boardUrl;
     currentBaseUrl = sanitizedBoardUrl.endsWith("/") ? sanitizedBoardUrl : sanitizedBoardUrl + "/";
@@ -301,9 +291,7 @@ function fetchThreadList(boardUrl) {
             const parser = new DOMParser();
             const doc = parser.parseFromString(response.data, "text/html");
             
-            // ★【ここを修正】HTML内の <title> タグから「PCゲーム＠5ちゃんねる」のような文字列を取得
             const rawTitle = doc.querySelector("title") ? doc.querySelector("title").innerText : "";
-            // 「＠5ちゃんねる」や「＠スレッド一覧」という不要な文字を綺麗に削って、純粋な「板名」だけにする
             const boardNameText = rawTitle.replace(/＠.*/, "").replace("スレッド一覧", "").trim();
 
             currentThreadLinks = Array.from(doc.querySelectorAll("a"));
@@ -312,8 +300,6 @@ function fetchThreadList(boardUrl) {
             document.getElementById("sort-container").style.display = "flex";
 
             updateSortButtons("default");
-            
-            // ★【ここを修正】抽出した「板名」を、描画関数にバトンタッチする
             renderThreadList("", boardNameText);
 
         } else {
@@ -322,21 +308,13 @@ function fetchThreadList(boardUrl) {
     });
 }
 
-// スレッドの描画（修正）
-// ★引数に「boardName」を追加しました
+// 11. スレッドの描画（★ここで大掃除・バグを完全駆逐！）
 function renderThreadList(keyword, boardName = "") {
     const listContainer = document.getElementById("bbs-list");
     listContainer.innerHTML = "";
     
-    // ★【今日の一撃】板名があれば「〇〇 スレッド一覧」、なければ「5ch.io スレッド一覧」にする
     if (boardName) {
         document.querySelector("h3").innerText = `${boardName} スレッド一覧`;
-        // 次の検索やソート（再描画）の時にも板名を使い回せるように、h3の文字をそのままキープする仕組みにします
-    } else {
-        // boardNameが空（検索窓の入力時など）は、すでに書き換わっているh3のタイトルをそのまま維持
-        if (!document.querySelector("h3").innerText.includes("スレッド一覧")) {
-            document.querySelector("h3").innerText = "5ch.io スレッド一覧";
-        }
     }
 
     const lowerKeyword = keyword.toLowerCase();
@@ -378,6 +356,8 @@ function renderThreadList(keyword, boardName = "") {
                 a.innerText = text;
                 a.target = "_blank"; 
 
+                // 🔔【大掃除の一撃】ここに移動したことで、どんなルートから描画されても、
+                // 検索・ソートされても、100%確実にクリック時に履歴に保存されるようになりました！
                 a.addEventListener("click", () => {
                     saveToHistory(text, finalUrl);
                 });
@@ -400,7 +380,7 @@ function renderThreadList(keyword, boardName = "") {
     });
 }
 
-// ソートボタン切り替え（既存）
+// 12. 各種イベントリスナー（既存のまま）
 function updateSortButtons(mode) {
     currentSortMode = mode;
     if (mode === "default") {
@@ -412,7 +392,6 @@ function updateSortButtons(mode) {
     }
 }
 
-// ソートボタンイベント（既存）
 document.getElementById("sort-default-btn").addEventListener("click", () => {
     updateSortButtons("default");
     renderThreadList(document.getElementById("search-input").value);
@@ -423,44 +402,24 @@ document.getElementById("sort-momentum-btn").addEventListener("click", () => {
     renderThreadList(document.getElementById("search-input").value);
 });
 
-// ★【今日新しく追加】板検索窓に文字が入力されるたびに即座に絞り込むイベント
 document.getElementById("board-search-input").addEventListener("input", (e) => {
-    const keyword = e.target.value;
-    renderBbsList(keyword);
+    renderBbsList(e.target.value);
+});
+document.getElementById("board-search-input").addEventListener("search", (e) => {
+    renderBbsList(e.target.value); 
 });
 
-// スレッド検索イベント（既存）
 document.getElementById("search-input").addEventListener("input", (e) => {
-    const keyword = e.target.value;
-    renderThreadList(keyword); 
+    renderThreadList(e.target.value); 
+});
+document.getElementById("search-input").addEventListener("search", (e) => {
+    renderThreadList(e.target.value); 
 });
 
-// 戻るボタンのイベント（既存）
 document.getElementById("back-btn").addEventListener("click", () => {
     const listContainer = document.getElementById("bbs-list");
     listContainer.innerHTML = "読み込み中..."; 
     fetchBbsList(); 
-});
-
-// --- 既存の検索イベントを以下のようにアップデート、または追記 ---
-
-// ★板検索窓：文字入力(input)に加えて、×ボタン押下(search)も同時に検知する
-document.getElementById("board-search-input").addEventListener("input", (e) => {
-    renderBbsList(e.target.value);
-});
-// ×ボタンが押されて中身が空になった時用のイベント
-document.getElementById("board-search-input").addEventListener("search", (e) => {
-    renderBbsList(e.target.value); // 空文字が渡るので自動的に全件表示に戻る！
-});
-
-
-// ★スレッド検索窓：文字入力(input)に加えて、×ボタン押下(search)も同時に検知する
-document.getElementById("search-input").addEventListener("input", (e) => {
-    renderThreadList(e.target.value); 
-});
-// ×ボタンが押されて中身が空になった時用のイベント
-document.getElementById("search-input").addEventListener("search", (e) => {
-    renderThreadList(e.target.value); // 空文字が渡るので自動的に全件表示に戻る！
 });
 
 // 最初の起動
